@@ -26,7 +26,8 @@ later items slot in additively rather than forcing rewrites.
 ## Sending & response
 - [done] Request building stage: resolve variables → apply auth (pluggable `IAuthProvider`:
   Bearer/Basic/API key) → assemble URL+query, headers, raw/form body → `HttpRequestMessage`
-- [MVP] Actually send over `HttpClient`; capture status, timing, size, response headers
+- [done] Send over `HttpClient` behind `IHttpSender`; capture status, headers, body,
+  content type, size, and elapsed time into an `ApiResponse`
 - [MVP] Body viewer: pretty / raw / preview, syntax highlighting (AvaloniaEdit)
 - [v2] **Tabular view** for JSON arrays via the virtualized data grid
 - [v2] Save response; diff against previous

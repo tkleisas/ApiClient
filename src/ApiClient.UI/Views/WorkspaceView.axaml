@@ -35,19 +35,19 @@
             </MenuItem>
         </Menu>
 
-        <Grid ColumnDefinitions="260,Auto,*">
+        <Grid ColumnDefinitions="220,Auto,*">
 
             <!-- Collection explorer -->
             <TreeView Grid.Column="0" ItemsSource="{Binding Nodes}"
                       SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}" x:DataType="vm:CollectionNodeViewModel">
-                        <TextBlock Text="{Binding Title}" Padding="0,2"/>
+                        <TextBlock Text="{Binding Title}" Padding="0,0"/>
                     </TreeDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <GridSplitter Grid.Column="1" Width="6" ResizeDirection="Columns" Background="Transparent"/>
+            <GridSplitter Grid.Column="1" Width="4" ResizeDirection="Columns" Background="Transparent"/>
 
             <!-- Request editor (the embeddable control) -->
             <views:ApiClientView Grid.Column="2" DataContext="{Binding Editor}"/>

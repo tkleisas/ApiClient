@@ -12,17 +12,17 @@
         <vm:RequestEditorViewModel/>
     </Design.DataContext>
 
-    <DockPanel Margin="4">
+    <DockPanel Margin="3">
 
         <!-- Request bar -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto">
-            <ComboBox Grid.Column="0" Width="96"
+            <ComboBox Grid.Column="0" Width="92"
                       ItemsSource="{Binding Methods}"
                       SelectedItem="{Binding Method}"/>
-            <TextBox Grid.Column="1" Margin="4,0"
+            <TextBox Grid.Column="1" Margin="3,0"
                      Text="{Binding Url}"
                      PlaceholderText="https://example.com/api"/>
-            <Button Grid.Column="2" Width="80"
+            <Button Grid.Column="2" Width="72"
                     Content="Send"
                     HorizontalContentAlignment="Center"
                     IsEnabled="{Binding !IsSending}"
@@ -30,14 +30,14 @@
         </Grid>
 
         <!-- Request config / response, vertically resizable -->
-        <Grid RowDefinitions="2*,Auto,3*" Margin="0,4,0,0">
+        <Grid RowDefinitions="2*,Auto,3*" Margin="0,3,0,0">
 
             <!-- Request configuration -->
             <TabControl Grid.Row="0">
                 <TabItem Header="Headers">
-                    <DockPanel Margin="4">
+                    <DockPanel Margin="2">
                         <Button DockPanel.Dock="Bottom" Content="+ Add header"
-                                HorizontalAlignment="Left" Margin="0,6,0,0"
+                                HorizontalAlignment="Left" Margin="0,3,0,0"
                                 Command="{Binding AddHeaderCommand}"/>
                         <ItemsControl ItemsSource="{Binding Headers}">
                             <ItemsControl.ItemTemplate>
@@ -59,8 +59,8 @@
                     </DockPanel>
                 </TabItem>
                 <TabItem Header="Body">
-                    <DockPanel Margin="4">
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                    <DockPanel Margin="2">
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,3">
                             <TextBlock Text="Content-Type:" VerticalAlignment="Center" Margin="0,0,6,0"/>
                             <TextBox Width="220" Text="{Binding BodyMediaType}"/>
                         </StackPanel>
@@ -71,8 +71,8 @@
                     </DockPanel>
                 </TabItem>
                 <TabItem Header="Code">
-                    <DockPanel Margin="4">
-                        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                    <DockPanel Margin="2">
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,3">
                             <ComboBox Grid.Column="0" HorizontalAlignment="Stretch"
                                       ItemsSource="{Binding Generators}"
                                       SelectedItem="{Binding SelectedGenerator}">
@@ -92,12 +92,12 @@
                 </TabItem>
             </TabControl>
 
-            <GridSplitter Grid.Row="1" Height="6" HorizontalAlignment="Stretch"
+            <GridSplitter Grid.Row="1" Height="4" HorizontalAlignment="Stretch"
                           ResizeDirection="Rows" Background="Transparent"/>
 
             <!-- Response -->
             <Grid Grid.Row="2" RowDefinitions="Auto,*">
-                <TextBlock Grid.Row="0" Margin="0,4,0,6" FontWeight="SemiBold"
+                <TextBlock Grid.Row="0" Margin="0,2,0,3" FontWeight="SemiBold"
                            Text="{Binding ResponseSummary}"/>
                 <TabControl Grid.Row="1">
                     <TabItem Header="Response body">

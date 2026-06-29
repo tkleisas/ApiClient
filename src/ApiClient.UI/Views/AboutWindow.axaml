@@ -5,7 +5,7 @@
         Width="440" SizeToContent="Height" CanResize="False"
         WindowStartupLocation="CenterOwner">
 
-    <StackPanel Margin="24" Spacing="10">
+    <StackPanel Margin="16" Spacing="6">
         <TextBlock x:Name="VersionText" FontSize="18" FontWeight="SemiBold"/>
         <TextBlock TextWrapping="Wrap"
                    Text="A fast, cross-platform API client built with Avalonia on .NET."/>

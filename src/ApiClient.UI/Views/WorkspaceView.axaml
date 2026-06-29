@@ -27,6 +27,9 @@
                 <Separator/>
                 <MenuItem Header="E_xit" Click="OnExit"/>
             </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_Settings…" Click="OnSettings"/>
+            </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About ApiClient" Click="OnAbout"/>
             </MenuItem>

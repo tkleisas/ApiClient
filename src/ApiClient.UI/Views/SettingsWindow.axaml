@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ApiClient.UI.Views.SettingsWindow"
+        x:CompileBindings="False"
+        Title="Settings"
+        Width="380" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <StackPanel Margin="20" Spacing="14">
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Theme"/>
+            <ComboBox HorizontalAlignment="Stretch"
+                      ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Font family"/>
+            <ComboBox HorizontalAlignment="Stretch"
+                      ItemsSource="{Binding FontFamilies}" SelectedItem="{Binding FontFamily}"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Font size"/>
+            <NumericUpDown Minimum="8" Maximum="32" Increment="1" Value="{Binding FontSize}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
+            <Button Content="Cancel" MinWidth="80" Click="OnCancel"/>
+            <Button Content="OK" MinWidth="80" Click="OnOk"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

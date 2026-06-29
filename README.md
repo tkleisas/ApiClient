@@ -56,7 +56,8 @@ model + JSON serializer, the `{{variable}}` resolver, the request-building pipel
 (resolve → auth → `HttpRequestMessage`), sending with response capture
 (`IHttpSender`/`ApiResponse`), a pluggable code generator with a C# `HttpClient`
 client + server emitters (C# `HttpClient` and ASP.NET minimal API), and a file-based
-collection loader/saver (`CollectionStore`) — 77 tests green. The Avalonia app shows a
-collection explorer (open a folder, click a request to edit it) beside the editor, which
-can send requests end-to-end and generate client/server code in a Code tab. The window
-displays its tag-derived version.
+collection loader/saver (`CollectionStore`) — 85 tests green. The Avalonia app has a menu
+(open/save collections, Settings, About), a collection explorer (open a folder, click a
+request to edit it) beside the editor, which can send requests end-to-end and generate
+client/server code in a Code tab. Settings (theme, font) persist; the window shows its
+tag-derived version.

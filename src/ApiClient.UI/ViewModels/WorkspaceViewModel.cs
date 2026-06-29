@@ -15,18 +15,31 @@ namespace ApiClient.UI.ViewModels;
 public partial class WorkspaceViewModel : ViewModelBase
 {
     private readonly CollectionStore _store;
+    private readonly SettingsStore _settingsStore;
 
-    /// <summary>Default constructor: a fresh editor and the file-based collection store.</summary>
+    /// <summary>Default constructor: a fresh editor and the file-based collection/settings stores.</summary>
     public WorkspaceViewModel()
-        : this(new RequestEditorViewModel(), new CollectionStore())
+        : this(new RequestEditorViewModel(), new CollectionStore(), new SettingsStore())
     {
     }
 
-    /// <summary>Creates the workspace with an explicit editor and store (used for testing).</summary>
-    public WorkspaceViewModel(RequestEditorViewModel editor, CollectionStore store)
+    /// <summary>Creates the workspace with explicit stores (used for testing).</summary>
+    public WorkspaceViewModel(RequestEditorViewModel editor, CollectionStore store, SettingsStore settingsStore)
     {
         Editor = editor;
         _store = store;
+        _settingsStore = settingsStore;
+        Settings = _settingsStore.Load();
+    }
+
+    /// <summary>The current application settings.</summary>
+    public AppSettings Settings { get; private set; }
+
+    /// <summary>Persists <paramref name="settings"/> and updates <see cref="Settings"/>.</summary>
+    public void SaveSettings(AppSettings settings)
+    {
+        _settingsStore.Save(settings);
+        Settings = settings;
     }
 
     /// <summary>The request editor shown beside the tree.</summary>

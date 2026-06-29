@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using ApiClient.Core;
 using ApiClient.Core.Http;
 using ApiClient.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -47,6 +48,9 @@ public partial class MainWindowViewModel : ViewModelBase
         _executor = executor;
         Headers.Add(new HeaderRowViewModel { Name = "Accept", Value = "application/json" });
     }
+
+    /// <summary>The window title, including the running version (from the git tag via MinVer).</summary>
+    public string WindowTitle => $"ApiClient {BuildInfo.Version}";
 
     /// <summary>The HTTP methods offered in the method drop-down.</summary>
     public string[] Methods { get; } = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];

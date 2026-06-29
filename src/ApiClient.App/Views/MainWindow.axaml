@@ -8,7 +8,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Width="900" Height="650"
-        Title="ApiClient">
+        Title="{Binding WindowTitle}">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>

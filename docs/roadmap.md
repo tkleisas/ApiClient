@@ -64,5 +64,14 @@ later items slot in additively rather than forcing rewrites.
   UI-free core almost for free
 
 ## Cross-cutting
-- [MVP] Single-file self-contained publish for Windows & Linux
+- [done] Tag-driven versioning (MinVer) shown in the app title
+- [done] GitHub Actions: CI (build/test) + tag-triggered release of single-file
+  self-contained binaries for win-x64 and linux-x64
 - [later] AOT compilation for fast startup / small footprint
+
+## nvs integration (see [integration.md](integration.md))
+- [done] UI-free `Core` so nvs can share the engine regardless of Avalonia version
+- [MVP] Extract `ApiClient.UI` embeddable control; slim `ApiClient.App` to a host
+- [MVP] `IHostServices` seam (collections root, open file, status) with a standalone default
+- [later] `ApiClient.Nvs` plugin hosting the control as a Dock.Avalonia panel (needs nvs plugin API)
+- [decision] Align UI to Avalonia 11.3 (match nvs) vs stay on 12

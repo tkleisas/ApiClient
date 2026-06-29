@@ -1,0 +1,16 @@
+<Project>
+
+  <!-- Versioning is derived from git tags by MinVer.
+       Tag a release as v1.2.3 and the build stamps that version into every assembly
+       (AssemblyVersion / FileVersion / InformationalVersion). Between tags you get a
+       higher pre-release version (e.g. 1.2.4-alpha.0.5) so dev builds are distinguishable.
+       The app reads it back at runtime via ApiClient.Core.BuildInfo. -->
+  <PropertyGroup>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="6.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

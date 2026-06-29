@@ -42,8 +42,9 @@ runner (for CI) almost free later on.
 
 - [Architecture](docs/architecture.md) — project layout, the request pipeline, codegen design
 - [Storage format](docs/storage-format.md) — request file schema, collection layout, secrets, versioning
+- [Integration](docs/integration.md) — running standalone and embedded in the nvs IDE
 - [Roadmap](docs/roadmap.md) — what's built vs. MVP / v2 / later
-- [Development](docs/development.md) — build/test commands and the TDD workflow
+- [Development](docs/development.md) — build/test, versioning/releases, and the TDD workflow
 
 ## Status
 

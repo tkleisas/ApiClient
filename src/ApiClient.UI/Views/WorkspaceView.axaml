@@ -12,13 +12,30 @@
         <vm:WorkspaceViewModel/>
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="260,Auto,*">
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveSelectedRequestCommand}"/>
+    </UserControl.KeyBindings>
 
-        <!-- Collection explorer -->
-        <DockPanel Grid.Column="0">
-            <Button DockPanel.Dock="Top" Margin="4" HorizontalAlignment="Stretch"
-                    Content="Open collection…" Click="OnOpenCollection"/>
-            <TreeView ItemsSource="{Binding Nodes}"
+    <DockPanel>
+
+        <!-- Menu -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open Collection…" Click="OnOpenCollection"/>
+                <MenuItem Header="_Save Request" Command="{Binding SaveSelectedRequestCommand}"
+                          InputGesture="Ctrl+S"/>
+                <Separator/>
+                <MenuItem Header="E_xit" Click="OnExit"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About ApiClient" Click="OnAbout"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid ColumnDefinitions="260,Auto,*">
+
+            <!-- Collection explorer -->
+            <TreeView Grid.Column="0" ItemsSource="{Binding Nodes}"
                       SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}" x:DataType="vm:CollectionNodeViewModel">
@@ -26,11 +43,11 @@
                     </TreeDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
-        </DockPanel>
 
-        <GridSplitter Grid.Column="1" Width="6" ResizeDirection="Columns" Background="Transparent"/>
+            <GridSplitter Grid.Column="1" Width="6" ResizeDirection="Columns" Background="Transparent"/>
 
-        <!-- Request editor (the embeddable control) -->
-        <views:ApiClientView Grid.Column="2" DataContext="{Binding Editor}"/>
-    </Grid>
+            <!-- Request editor (the embeddable control) -->
+            <views:ApiClientView Grid.Column="2" DataContext="{Binding Editor}"/>
+        </Grid>
+    </DockPanel>
 </UserControl>

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using ApiClient.Core.Model;
 using ApiClient.Core.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ApiClient.UI.ViewModels;
 
@@ -41,34 +43,48 @@ public partial class WorkspaceViewModel : ViewModelBase
     {
         var collection = _store.Load(directory);
         Nodes.Clear();
-        Nodes.Add(BuildRoot(collection));
+        Nodes.Add(BuildRoot(collection, directory));
+    }
+
+    /// <summary>Whether the current selection is a saved request that can be written back to disk.</summary>
+    public bool CanSaveSelectedRequest => SelectedNode is { IsRequest: true, Directory: not null };
+
+    /// <summary>Writes the editor's current request back to the selected request's file on disk.</summary>
+    [RelayCommand(CanExecute = nameof(CanSaveSelectedRequest))]
+    private void SaveSelectedRequest()
+    {
+        if (SelectedNode is { IsRequest: true, Directory: { } directory })
+            _store.SaveRequest(Editor.ToRequest(), directory);
     }
 
     partial void OnSelectedNodeChanged(CollectionNodeViewModel? value)
     {
         if (value is { IsRequest: true, Request: not null })
             Editor.LoadFrom(value.Request);
+
+        SaveSelectedRequestCommand.NotifyCanExecuteChanged();
     }
 
-    private static CollectionNodeViewModel BuildRoot(Collection collection)
+    private static CollectionNodeViewModel BuildRoot(Collection collection, string directory)
     {
         var root = CollectionNodeViewModel.Folder(collection.Name);
-        AddChildren(root, collection.Folders, collection.Requests);
+        AddChildren(root, collection.Folders, collection.Requests, directory);
         return root;
     }
 
     private static void AddChildren(
         CollectionNodeViewModel node,
         IReadOnlyList<CollectionFolder> folders,
-        IReadOnlyList<ApiRequest> requests)
+        IReadOnlyList<ApiRequest> requests,
+        string directory)
     {
         foreach (var request in requests)
-            node.Children.Add(CollectionNodeViewModel.ForRequest(request));
+            node.Children.Add(CollectionNodeViewModel.ForRequest(request, directory));
 
         foreach (var folder in folders)
         {
             var folderNode = CollectionNodeViewModel.Folder(folder.Name);
-            AddChildren(folderNode, folder.Folders, folder.Requests);
+            AddChildren(folderNode, folder.Folders, folder.Requests, Path.Combine(directory, folder.Name));
             node.Children.Add(folderNode);
         }
     }

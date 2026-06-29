@@ -66,6 +66,17 @@ public sealed class CollectionStore
         SaveContents(collection.Requests, collection.Folders, directory);
     }
 
+    /// <summary>
+    /// Saves a single request as a <c>*.req.json</c> file in <paramref name="directory"/>
+    /// (created if needed). The file name is derived from the request's name, so saving a
+    /// request loaded from disk overwrites its original file.
+    /// </summary>
+    public void SaveRequest(ApiRequest request, string directory)
+    {
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory, FileNameFor(request)), _serializer.Serialize(request));
+    }
+
     private void SaveContents(IReadOnlyList<ApiRequest> requests, IReadOnlyList<CollectionFolder> folders, string directory)
     {
         foreach (var request in requests)

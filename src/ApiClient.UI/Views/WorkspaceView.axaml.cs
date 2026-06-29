@@ -1,6 +1,8 @@
 using System.Linq;
 using ApiClient.UI.ViewModels;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
@@ -37,5 +39,20 @@ public partial class WorkspaceView : UserControl
         var path = folders.FirstOrDefault()?.TryGetLocalPath();
         if (!string.IsNullOrEmpty(path))
             workspace.LoadCollection(path);
+    }
+
+    private void OnAbout(object? sender, RoutedEventArgs e)
+    {
+        var about = new AboutWindow();
+        if (TopLevel.GetTopLevel(this) is Window owner)
+            about.ShowDialog(owner);
+        else
+            about.Show();
+    }
+
+    private void OnExit(object? sender, RoutedEventArgs e)
+    {
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            desktop.Shutdown();
     }
 }

@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ApiClient.UI.Views.AboutWindow"
+        Title="About ApiClient"
+        Width="440" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <StackPanel Margin="24" Spacing="10">
+        <TextBlock x:Name="VersionText" FontSize="18" FontWeight="SemiBold"/>
+        <TextBlock TextWrapping="Wrap"
+                   Text="A fast, cross-platform API client built with Avalonia on .NET."/>
+        <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                   Text="Local-first and yours: no account, no telemetry, no upgrade nagging. Collections are plain files you own."/>
+        <TextBlock Text="License: see LICENSE.txt in the repository." Opacity="0.8"/>
+        <SelectableTextBlock Text="https://github.com/tkleisas/ApiClient" Opacity="0.8"/>
+        <Button Content="OK" HorizontalAlignment="Right" MinWidth="80" Click="OnOk"/>
+    </StackPanel>
+</Window>

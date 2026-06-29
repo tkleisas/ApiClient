@@ -76,6 +76,27 @@ public class WorkspaceViewModelTests
     }
 
     [Fact]
+    public void Saving_the_selected_request_persists_editor_edits_to_disk()
+    {
+        using var dir = new TempDir();
+        new CollectionStore().Save(SampleCollection(), dir.Path);
+        var ws = new WorkspaceViewModel();
+        ws.LoadCollection(dir.Path);
+
+        var getUser = ws.Nodes.Single().Children
+            .Single(n => n.Title == "Users").Children
+            .Single(n => n.Title == "Get User");
+        ws.SelectedNode = getUser;
+        ws.Editor.Url = "https://h/users/2";
+
+        ws.SaveSelectedRequestCommand.Execute(null);
+
+        var reloaded = new CollectionStore().Load(dir.Path);
+        var users = reloaded.Folders.Single(f => f.Name == "Users");
+        Assert.Equal("https://h/users/2", users.Requests.Single(r => r.Name == "Get User").Url);
+    }
+
+    [Fact]
     public void Selecting_a_folder_node_does_not_change_the_editor()
     {
         using var dir = new TempDir();

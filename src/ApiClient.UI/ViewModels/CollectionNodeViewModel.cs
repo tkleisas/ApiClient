@@ -9,11 +9,12 @@ namespace ApiClient.UI.ViewModels;
 /// </summary>
 public sealed class CollectionNodeViewModel
 {
-    private CollectionNodeViewModel(string title, bool isRequest, ApiRequest? request)
+    private CollectionNodeViewModel(string title, bool isRequest, ApiRequest? request, string? directory)
     {
         Title = title;
         IsRequest = isRequest;
         Request = request;
+        Directory = directory;
     }
 
     /// <summary>The label shown in the tree.</summary>
@@ -25,12 +26,16 @@ public sealed class CollectionNodeViewModel
     /// <summary>The request carried by a request node; null for folders.</summary>
     public ApiRequest? Request { get; }
 
+    /// <summary>The on-disk directory containing this request's file (request nodes only); null for folders.</summary>
+    public string? Directory { get; }
+
     /// <summary>Child nodes (folders/requests). Empty for request nodes.</summary>
     public ObservableCollection<CollectionNodeViewModel> Children { get; } = [];
 
     /// <summary>Creates a folder node.</summary>
-    public static CollectionNodeViewModel Folder(string title) => new(title, isRequest: false, request: null);
+    public static CollectionNodeViewModel Folder(string title) => new(title, isRequest: false, request: null, directory: null);
 
-    /// <summary>Creates a request node from <paramref name="request"/>.</summary>
-    public static CollectionNodeViewModel ForRequest(ApiRequest request) => new(request.Name, isRequest: true, request);
+    /// <summary>Creates a request node from <paramref name="request"/>, located in <paramref name="directory"/>.</summary>
+    public static CollectionNodeViewModel ForRequest(ApiRequest request, string directory)
+        => new(request.Name, isRequest: true, request, directory);
 }

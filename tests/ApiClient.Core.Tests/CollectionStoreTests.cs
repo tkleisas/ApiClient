@@ -145,6 +145,31 @@ public class CollectionStoreTests
     }
 
     [Fact]
+    public void Save_request_writes_a_single_file_that_load_picks_up()
+    {
+        using var dir = new TempDir();
+
+        Store().SaveRequest(new ApiRequest { Name = "Ping", Url = "https://h/ping" }, dir.Path);
+
+        Assert.True(File.Exists(dir.Combine("Ping.req.json")));
+        var loaded = Store().Load(dir.Path);
+        Assert.Equal("https://h/ping", loaded.Requests.Single(r => r.Name == "Ping").Url);
+    }
+
+    [Fact]
+    public void Save_request_overwrites_the_existing_file_for_the_same_name()
+    {
+        using var dir = new TempDir();
+        Store().SaveRequest(new ApiRequest { Name = "Ping", Url = "https://h/v1" }, dir.Path);
+
+        Store().SaveRequest(new ApiRequest { Name = "Ping", Url = "https://h/v2" }, dir.Path);
+
+        var loaded = Store().Load(dir.Path);
+        Assert.Single(loaded.Requests);
+        Assert.Equal("https://h/v2", loaded.Requests[0].Url);
+    }
+
+    [Fact]
     public void Load_ignores_files_that_are_not_request_files()
     {
         using var dir = new TempDir();

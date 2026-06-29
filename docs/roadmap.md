@@ -15,11 +15,13 @@ later items slot in additively rather than forcing rewrites.
   request to load it into the editor (`WorkspaceView`/`WorkspaceViewModel`)
 - [MVP] Save edits back to disk; rename/add/delete; drag-reorder *(part of the shell step below)*
 
-## App shell, settings & About (scheduled)
-- [MVP] Top menu — File: open / save / save-as collection & requests, recent items
-- [MVP] Settings dialog — server/client **certificates** & TLS options; **theme**,
-  accent **colors**, **font** family/size; persisted via host/config
-- [MVP] About box — version (from `BuildInfo`), license, project links
+## App shell, settings & About
+- [done] Top menu (File: Open Collection, Save Request + Ctrl+S, Exit; Help: About)
+- [done] Save edits back to disk (`CollectionStore.SaveRequest`, single file)
+- [done] About box — version (from `BuildInfo`), principles, license, repo link
+- [MVP] File: save-as, recent items; tree add/rename/delete; drag-reorder
+- [MVP] Settings dialog — **theme**, accent **colors**, **font** family/size; persisted
+- [MVP] Settings: server/client **certificates** & TLS options (wired into the sender)
 - [v2] Folder-level inherited settings (base URL, shared auth/headers)
 - [later] Collection-level scripting hooks
 

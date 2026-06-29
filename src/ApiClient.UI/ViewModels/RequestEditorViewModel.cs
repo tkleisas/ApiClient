@@ -57,6 +57,9 @@ public partial class RequestEditorViewModel : ViewModelBase
         SelectedGenerator = Generators[0];
     }
 
+    /// <summary>The name of the request being edited (preserved so saves overwrite the right file).</summary>
+    public string RequestName { get; set; } = "Untitled";
+
     /// <summary>The HTTP methods offered in the method drop-down.</summary>
     public string[] Methods { get; } = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
 
@@ -150,9 +153,13 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     partial void OnUrlChanged(string value) => SendCommand.NotifyCanExecuteChanged();
 
+    /// <summary>Builds an <see cref="ApiRequest"/> from the current editor state.</summary>
+    public ApiRequest ToRequest() => BuildRequest();
+
     /// <summary>Loads <paramref name="request"/> into the editor, replacing the current contents and clearing any prior response.</summary>
     public void LoadFrom(ApiRequest request)
     {
+        RequestName = request.Name;
         Method = request.Method;
         Url = request.Url;
 
@@ -189,7 +196,7 @@ public partial class RequestEditorViewModel : ViewModelBase
 
         return new ApiRequest
         {
-            Name = "Untitled",
+            Name = RequestName,
             Method = Method,
             Url = Url,
             Headers = headers,

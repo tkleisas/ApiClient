@@ -37,6 +37,14 @@ These are commitments, not marketing. They drive real design decisions:
 Keeping `Core` free of UI dependencies keeps it testable and makes a headless CLI
 runner (for CI) almost free later on.
 
+## Documentation
+
+- [Architecture](docs/architecture.md) — project layout, the request pipeline, codegen design
+- [Storage format](docs/storage-format.md) — request file schema, collection layout, secrets, versioning
+- [Roadmap](docs/roadmap.md) — what's built vs. MVP / v2 / later
+- [Development](docs/development.md) — build/test commands and the TDD workflow
+
 ## Status
 
-Early development. Built test-first (TDD).
+Early development. Built test-first (TDD). Implemented so far: the request domain
+model + JSON serializer, and the `{{variable}}` resolver — 19 tests green.

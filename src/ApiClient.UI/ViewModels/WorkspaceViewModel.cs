@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using ApiClient.Core.Hosting;
+using ApiClient.Core.Http;
 using ApiClient.Core.Model;
 using ApiClient.Core.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,13 +19,26 @@ public partial class WorkspaceViewModel : ViewModelBase
     private readonly CollectionStore _store;
     private readonly SettingsStore _settingsStore;
 
-    /// <summary>Default constructor: a fresh editor and the file-based collection/settings stores.</summary>
+    /// <summary>Default constructor: builds the editor with a TLS-configured HTTP client from saved settings.</summary>
     public WorkspaceViewModel()
-        : this(new RequestEditorViewModel(), new CollectionStore(), new SettingsStore())
+        : this(new CollectionStore(), new SettingsStore())
     {
     }
 
-    /// <summary>Creates the workspace with explicit stores (used for testing).</summary>
+    /// <summary>Creates the workspace from stores, building a TLS-configured editor from the loaded settings.</summary>
+    public WorkspaceViewModel(CollectionStore store, SettingsStore settingsStore)
+    {
+        _store = store;
+        _settingsStore = settingsStore;
+        Settings = _settingsStore.Load();
+
+        var executor = new RequestExecutor(
+            HttpRequestFactory.CreateDefault(),
+            new HttpClientSender(TlsHandlerFactory.CreateClient(Settings.ToTlsOptions())));
+        Editor = new RequestEditorViewModel(executor, new StandaloneHostServices());
+    }
+
+    /// <summary>Creates the workspace with an explicit editor and stores (used for testing).</summary>
     public WorkspaceViewModel(RequestEditorViewModel editor, CollectionStore store, SettingsStore settingsStore)
     {
         Editor = editor;

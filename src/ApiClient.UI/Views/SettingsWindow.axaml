@@ -25,6 +25,28 @@
             <NumericUpDown Minimum="8" Maximum="32" Increment="1" Value="{Binding FontSize}"/>
         </StackPanel>
 
+        <Separator/>
+
+        <TextBlock Text="Network / TLS" FontWeight="SemiBold"/>
+        <CheckBox Content="Allow invalid server certificates (not recommended)"
+                  IsChecked="{Binding AllowInvalidServerCertificates}"/>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Client certificate (.pfx) for mutual TLS"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox Grid.Column="0" Text="{Binding ClientCertificatePath}"
+                         PlaceholderText="Path to client certificate"/>
+                <Button Grid.Column="1" Margin="6,0,0,0" Content="Browse…" Click="OnBrowseCertificate"/>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Client certificate password"/>
+            <TextBox PasswordChar="•" Text="{Binding ClientCertificatePassword}"/>
+            <TextBlock Text="Stored in plain text locally. Certificate changes apply after restart."
+                       FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
             <Button Content="Cancel" MinWidth="80" Click="OnCancel"/>
             <Button Content="OK" MinWidth="80" Click="OnOk"/>

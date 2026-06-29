@@ -26,4 +26,21 @@ public class SettingsViewModelTests
         Assert.Equal("Inter", settings.FontFamily);
         Assert.Equal(16, settings.FontSize);
     }
+
+    [Fact]
+    public void Round_trips_tls_options()
+    {
+        var vm = new SettingsViewModel(new AppSettings
+        {
+            AllowInvalidServerCertificates = true,
+            ClientCertificatePath = @"C:\certs\client.pfx",
+            ClientCertificatePassword = "secret",
+        });
+
+        var settings = vm.ToSettings();
+
+        Assert.True(settings.AllowInvalidServerCertificates);
+        Assert.Equal(@"C:\certs\client.pfx", settings.ClientCertificatePath);
+        Assert.Equal("secret", settings.ClientCertificatePassword);
+    }
 }

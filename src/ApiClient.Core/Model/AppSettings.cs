@@ -30,4 +30,24 @@ public record AppSettings
 
     /// <summary>The base UI font size in points. Defaults to 14.</summary>
     public double FontSize { get; init; } = 14;
+
+    /// <summary>When true, server certificate validation errors are ignored (e.g. self-signed certs in dev).</summary>
+    public bool AllowInvalidServerCertificates { get; init; }
+
+    /// <summary>Path to a client certificate (.pfx) for mutual TLS; empty to disable.</summary>
+    public string ClientCertificatePath { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Password for the client certificate, if any. NOTE: stored in plain text in the local
+    /// settings file — a known limitation; prefer passwordless certs or leave empty.
+    /// </summary>
+    public string ClientCertificatePassword { get; init; } = string.Empty;
+
+    /// <summary>Projects the TLS-related settings into <see cref="TlsOptions"/> for the HTTP layer.</summary>
+    public TlsOptions ToTlsOptions() => new TlsOptions
+    {
+        AllowInvalidServerCertificates = AllowInvalidServerCertificates,
+        ClientCertificatePath = string.IsNullOrEmpty(ClientCertificatePath) ? null : ClientCertificatePath,
+        ClientCertificatePassword = string.IsNullOrEmpty(ClientCertificatePassword) ? null : ClientCertificatePassword,
+    };
 }

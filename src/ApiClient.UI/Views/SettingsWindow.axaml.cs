@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using ApiClient.Core.Model;
 using ApiClient.UI.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 
 namespace ApiClient.UI.Views;
 
@@ -35,4 +38,23 @@ public partial class SettingsWindow : Window
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close();
+
+    private async void OnBrowseCertificate(object? sender, RoutedEventArgs e)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select client certificate",
+            AllowMultiple = false,
+            FileTypeFilter = new List<FilePickerFileType>
+            {
+                new FilePickerFileType("Certificates") { Patterns = ["*.pfx", "*.p12"] },
+                new FilePickerFileType("All files") { Patterns = ["*"] },
+            },
+        });
+
+        var path = files.FirstOrDefault()?.TryGetLocalPath();
+        if (!string.IsNullOrEmpty(path))
+            ViewModel.ClientCertificatePath = path;
+    }
 }
+

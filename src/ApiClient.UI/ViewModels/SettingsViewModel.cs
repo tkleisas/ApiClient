@@ -23,6 +23,15 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty]
     private double _fontSize = 14;
 
+    [ObservableProperty]
+    private bool _allowInvalidServerCertificates;
+
+    [ObservableProperty]
+    private string _clientCertificatePath = string.Empty;
+
+    [ObservableProperty]
+    private string _clientCertificatePassword = string.Empty;
+
     /// <summary>Design-time constructor.</summary>
     public SettingsViewModel()
     {
@@ -34,6 +43,9 @@ public partial class SettingsViewModel : ViewModelBase
         Theme = settings.Theme;
         FontFamily = string.IsNullOrEmpty(settings.FontFamily) ? DefaultFont : settings.FontFamily;
         FontSize = settings.FontSize;
+        AllowInvalidServerCertificates = settings.AllowInvalidServerCertificates;
+        ClientCertificatePath = settings.ClientCertificatePath;
+        ClientCertificatePassword = settings.ClientCertificatePassword;
     }
 
     /// <summary>Produces an <see cref="AppSettings"/> from the current edits.</summary>
@@ -42,5 +54,8 @@ public partial class SettingsViewModel : ViewModelBase
         Theme = Theme,
         FontFamily = FontFamily == DefaultFont ? string.Empty : FontFamily,
         FontSize = FontSize,
+        AllowInvalidServerCertificates = AllowInvalidServerCertificates,
+        ClientCertificatePath = ClientCertificatePath,
+        ClientCertificatePassword = ClientCertificatePassword,
     };
 }

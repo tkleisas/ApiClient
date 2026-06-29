@@ -21,9 +21,10 @@ later items slot in additively rather than forcing rewrites.
 - [done] About box — version (from `BuildInfo`), principles, license, repo link
 - [done] Settings dialog — **theme** (system/light/dark) and **font** family/size,
   persisted (`SettingsStore`) and applied at startup (`AppearanceService`)
+- [done] Settings: TLS options — allow-invalid-server-cert toggle + client certificate
+  (mutual TLS), wired into the sender via `TlsHandlerFactory`; applied at startup
 - [MVP] File: save-as, recent items; tree add/rename/delete; drag-reorder
 - [MVP] Settings: accent **colors** (theme-resource overrides)
-- [MVP] Settings: server/client **certificates** & TLS options (wired into the sender)
 - [v2] Folder-level inherited settings (base URL, shared auth/headers)
 - [later] Collection-level scripting hooks
 

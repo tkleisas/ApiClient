@@ -55,7 +55,8 @@ Early development. Built test-first (TDD). Implemented so far: the request domai
 model + JSON serializer, the `{{variable}}` resolver, the request-building pipeline
 (resolve → auth → `HttpRequestMessage`), sending with response capture
 (`IHttpSender`/`ApiResponse`), a pluggable code generator with a C# `HttpClient`
-client emitter, and a file-based collection loader/saver (`CollectionStore`) — 67 tests green.
-The Avalonia app shows a collection explorer (open a folder, click a request to edit it)
-beside the embeddable editor, sends requests through the engine end-to-end, and displays
-its tag-derived version.
+client + server emitters (C# `HttpClient` and ASP.NET minimal API), and a file-based
+collection loader/saver (`CollectionStore`) — 77 tests green. The Avalonia app shows a
+collection explorer (open a folder, click a request to edit it) beside the editor, which
+can send requests end-to-end and generate client/server code in a Code tab. The window
+displays its tag-derived version.

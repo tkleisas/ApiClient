@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:ApiClient.UI.ViewModels"
+             xmlns:codegen="using:ApiClient.Core.CodeGen"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
@@ -67,6 +68,26 @@
                                  FontFamily="Cascadia Code,Consolas,monospace"
                                  PlaceholderText="Request body (leave empty for none)"
                                  Text="{Binding RequestBody}"/>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Code">
+                    <DockPanel Margin="4">
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                            <ComboBox Grid.Column="0" HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Generators}"
+                                      SelectedItem="{Binding SelectedGenerator}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="codegen:ICodeGenerator">
+                                        <TextBlock Text="{Binding DisplayName}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button Grid.Column="1" Margin="6,0,0,0" Content="Generate"
+                                    Command="{Binding GenerateCodeCommand}"/>
+                        </Grid>
+                        <TextBox IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
+                                 FontFamily="Cascadia Code,Consolas,monospace"
+                                 Text="{Binding GeneratedCode}"/>
                     </DockPanel>
                 </TabItem>
             </TabControl>

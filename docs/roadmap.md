@@ -13,7 +13,13 @@ later items slot in additively rather than forcing rewrites.
   request tree, `collection.json` manifest, `*.req.json` files, round-trips on disk
 - [done] Collection explorer in the UI: open a folder, browse the nested tree, click a
   request to load it into the editor (`WorkspaceView`/`WorkspaceViewModel`)
-- [MVP] Save edits back to disk; rename/add/delete; drag-reorder
+- [MVP] Save edits back to disk; rename/add/delete; drag-reorder *(part of the shell step below)*
+
+## App shell, settings & About (scheduled)
+- [MVP] Top menu — File: open / save / save-as collection & requests, recent items
+- [MVP] Settings dialog — server/client **certificates** & TLS options; **theme**,
+  accent **colors**, **font** family/size; persisted via host/config
+- [MVP] About box — version (from `BuildInfo`), license, project links
 - [v2] Folder-level inherited settings (base URL, shared auth/headers)
 - [later] Collection-level scripting hooks
 
@@ -46,8 +52,9 @@ later items slot in additively rather than forcing rewrites.
 - [done] Pluggable `ICodeGenerator` (Client/Server scenarios)
 - [done] C# `HttpClient` client snippet from a request (method, URL+query, headers,
   auth via providers, raw/form body, send + read)
+- [done] Server scenario: C# ASP.NET minimal-API endpoint stub (`CSharpMinimalApiGenerator`)
+- [done] Code generation surfaced in the UI (Code tab: pick generator, Generate, view)
 - [v2] Refit + RestSharp client flavors; response JSON → C# records
-- [v2] Server scenario: contract / stub generation
 - [later] curl / Python / JS / TS generators
 
 ## History & sharing

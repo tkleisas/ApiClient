@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using ApiClient.Core.CodeGen;
 using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
 using ApiClient.Core.Model;
@@ -53,6 +54,7 @@ public partial class RequestEditorViewModel : ViewModelBase
         _executor = executor;
         _host = host;
         Headers.Add(new HeaderRowViewModel { Name = "Accept", Value = "application/json" });
+        SelectedGenerator = Generators[0];
     }
 
     /// <summary>The HTTP methods offered in the method drop-down.</summary>
@@ -60,6 +62,13 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     /// <summary>Editable request headers.</summary>
     public ObservableCollection<HeaderRowViewModel> Headers { get; } = [];
+
+    /// <summary>Available code generators (client and server scenarios).</summary>
+    public IReadOnlyList<ICodeGenerator> Generators { get; } =
+    [
+        CSharpHttpClientGenerator.CreateDefault(),
+        new CSharpMinimalApiGenerator(),
+    ];
 
     [ObservableProperty]
     private string _method = "GET";
@@ -84,6 +93,21 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _responseBody = string.Empty;
+
+    [ObservableProperty]
+    private ICodeGenerator? _selectedGenerator;
+
+    [ObservableProperty]
+    private string _generatedCode = string.Empty;
+
+    [RelayCommand]
+    private void GenerateCode()
+    {
+        if (SelectedGenerator is not null)
+            GeneratedCode = SelectedGenerator.Generate(BuildRequest());
+    }
+
+    partial void OnSelectedGeneratorChanged(ICodeGenerator? value) => GenerateCode();
 
     [RelayCommand]
     private void AddHeader() => Headers.Add(new HeaderRowViewModel());

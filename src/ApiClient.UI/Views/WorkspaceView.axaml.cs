@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using ApiClient.UI;
 using ApiClient.UI.ViewModels;
 using Avalonia;
@@ -24,22 +25,30 @@ public partial class WorkspaceView : UserControl
 
     private async void OnOpenCollection(object? sender, RoutedEventArgs e)
     {
-        if (DataContext is not WorkspaceViewModel workspace)
-            return;
+        if (DataContext is WorkspaceViewModel workspace && await PickFolderAsync("Open collection folder") is { } path)
+            workspace.LoadCollection(path);
+    }
 
+    private async void OnImportBruno(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is WorkspaceViewModel workspace && await PickFolderAsync("Import Bruno collection folder") is { } path)
+            workspace.ImportBrunoCollection(path);
+    }
+
+    private async Task<string?> PickFolderAsync(string title)
+    {
         var topLevel = TopLevel.GetTopLevel(this);
         if (topLevel is null)
-            return;
+            return null;
 
         var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
-            Title = "Open collection folder",
+            Title = title,
             AllowMultiple = false,
         });
 
         var path = folders.FirstOrDefault()?.TryGetLocalPath();
-        if (!string.IsNullOrEmpty(path))
-            workspace.LoadCollection(path);
+        return string.IsNullOrEmpty(path) ? null : path;
     }
 
     private void OnAbout(object? sender, RoutedEventArgs e)

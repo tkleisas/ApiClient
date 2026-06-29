@@ -22,6 +22,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open Collection…" Click="OnOpenCollection"/>
+                <MenuItem Header="Import _Bruno collection…" Click="OnImportBruno"/>
                 <MenuItem Header="_Save Request" Command="{Binding SaveSelectedRequestCommand}"
                           InputGesture="Ctrl+S"/>
                 <Separator/>

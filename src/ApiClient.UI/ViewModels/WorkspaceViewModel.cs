@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
+using ApiClient.Core.ImportExport;
 using ApiClient.Core.Model;
 using ApiClient.Core.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -70,6 +71,14 @@ public partial class WorkspaceViewModel : ViewModelBase
     public void LoadCollection(string directory)
     {
         var collection = _store.Load(directory);
+        Nodes.Clear();
+        Nodes.Add(BuildRoot(collection, directory));
+    }
+
+    /// <summary>Imports a Bruno (<c>.bru</c>) collection folder into the tree. Saving a request converts it to the native format.</summary>
+    public void ImportBrunoCollection(string directory)
+    {
+        var collection = BrunoImporter.ImportCollection(directory);
         Nodes.Clear();
         Nodes.Add(BuildRoot(collection, directory));
     }

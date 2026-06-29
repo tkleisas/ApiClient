@@ -65,6 +65,7 @@ later items slot in additively rather than forcing rewrites.
 ## History & sharing
 - [MVP] Per-request send history; sharing = the files themselves
 - [v2] Global, searchable history (virtualized grid); one-click export bundle
+- [done] Import Bruno (`.bru`) collections (`BrunoImporter`: parse request + walk folder)
 - [v2] Import from curl; import from Postman / OpenAPI (adoption lever)
 
 ## Scripting & tests

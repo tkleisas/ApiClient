@@ -4,8 +4,8 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
-using ApiClient.App.ViewModels;
 using ApiClient.App.Views;
+using ApiClient.UI.ViewModels;
 
 namespace ApiClient.App;
 
@@ -22,7 +22,7 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = new RequestEditorViewModel(),
             };
         }
 

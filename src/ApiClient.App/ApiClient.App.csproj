@@ -26,5 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApiClient.Core\ApiClient.Core.csproj" />
+    <ProjectReference Include="..\ApiClient.UI\ApiClient.UI.csproj" />
   </ItemGroup>
 </Project>

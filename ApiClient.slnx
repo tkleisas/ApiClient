@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/ApiClient.App/ApiClient.App.csproj" />
     <Project Path="src/ApiClient.Core/ApiClient.Core.csproj" />
+    <Project Path="src/ApiClient.UI/ApiClient.UI.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ApiClient.Core.Tests/ApiClient.Core.Tests.csproj" />

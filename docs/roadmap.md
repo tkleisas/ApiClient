@@ -71,7 +71,7 @@ later items slot in additively rather than forcing rewrites.
 
 ## nvs integration (see [integration.md](integration.md))
 - [done] UI-free `Core` so nvs can share the engine regardless of Avalonia version
-- [MVP] Extract `ApiClient.UI` embeddable control; slim `ApiClient.App` to a host
-- [MVP] `IHostServices` seam (collections root, open file, status) with a standalone default
+- [done] Extracted `ApiClient.UI` embeddable `ApiClientView`; `ApiClient.App` is now a thin host
+- [done] `IHostServices` seam (collections root, open file, status) + standalone default
+- [done] Decision: stay on Avalonia 12 (embed into nvs when it moves to 12)
 - [later] `ApiClient.Nvs` plugin hosting the control as a Dock.Avalonia panel (needs nvs plugin API)
-- [decision] Align UI to Avalonia 11.3 (match nvs) vs stay on 12

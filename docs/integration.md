@@ -25,18 +25,17 @@ affects the UI layer.
 ## Proposed project structure
 
 ```
-ApiClient.Core   UI-free engine. Shared by every host. (exists)
-ApiClient.UI     Avalonia views + view models as an embeddable UserControl
-                 (`ApiClientView`). Targets the Avalonia version nvs uses (11.3).
-ApiClient.App    Thin standalone host: a Window that hosts ApiClientView. (exists, to slim down)
+ApiClient.Core   UI-free engine. Shared by every host. (done)
+ApiClient.UI     Avalonia views + view models; embeddable `ApiClientView` control. (done)
+ApiClient.App    Thin standalone host: a Window that hosts ApiClientView. (done)
 ApiClient.Nvs    Future: implements the nvs plugin contract and surfaces ApiClientView
                  as a Dock.Avalonia document/tool. Built once nvs exposes a plugin API.
 ```
 
-The current `ApiClient.App` holds the views/view models directly; the integration work
-is to **extract them into `ApiClient.UI`** as a self-contained control, leaving `App` as
-a minimal window host. Then both `App` and a future `ApiClient.Nvs` plugin host the same
-control — no duplicated UI.
+The UI now lives in `ApiClient.UI` as the self-contained `ApiClientView`; `App` is just a
+window that drops in that control. A future `ApiClient.Nvs` plugin will host the **same**
+control — no duplicated UI. To embed, add `ApiClientView` to the host's visual tree and
+assign a `RequestEditorViewModel` (constructed with the host's `IHostServices`).
 
 ## Host services seam
 
@@ -57,8 +56,10 @@ public interface IHostServices
 - **Embedded** receives nvs's implementation, so collections sit inside the open
   workspace and can reuse nvs's git integration, and status flows to the IDE.
 
-## Open decision
+## Avalonia version decision (resolved)
 
-Whether to **align `ApiClient.App`/`ApiClient.UI` to Avalonia 11.3 now** (matching nvs,
-enabling embedding) or stay on Avalonia 12 and revisit when nvs upgrades. Aligning is
-cheapest now, while the UI is small. See the project status discussion.
+We are **staying on Avalonia 12** for now. The structural prep above (UI extracted,
+`IHostServices` seam) is done, so we are embedding-ready — but actual in-process embedding
+into nvs requires matching Avalonia versions. The plan is to wire up `ApiClient.Nvs` once
+nvs moves to Avalonia 12 (or, if needed sooner, ship a UI build pinned to nvs's version).
+Until then, `ApiClient.Core` can already be shared with nvs regardless of Avalonia version.

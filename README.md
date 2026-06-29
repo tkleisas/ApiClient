@@ -31,8 +31,11 @@ These are commitments, not marketing. They drive real design decisions:
 
 - `src/ApiClient.Core` — UI-free domain logic: HTTP engine, collection storage,
   variable resolution, auth, code generation. Pure and fully unit-tested.
-- `src/ApiClient.App` — Avalonia UI (MVVM). First editor window: method/URL/headers/
-  body + Send, wired to the engine; shows status, timing, size, response body & headers.
+- `src/ApiClient.UI` — Avalonia (MVVM) views/view models; the embeddable `ApiClientView`
+  control (method/URL/headers/body + Send; status, timing, size, response body & headers).
+- `src/ApiClient.App` — thin standalone host: a window that embeds `ApiClientView` and
+  shows the version. The same control can be embedded in the nvs IDE — see
+  [docs/integration.md](docs/integration.md).
 - `tests/ApiClient.Core.Tests` — xUnit tests. The project is developed test-first.
 
 Keeping `Core` free of UI dependencies keeps it testable and makes a headless CLI
@@ -52,5 +55,6 @@ Early development. Built test-first (TDD). Implemented so far: the request domai
 model + JSON serializer, the `{{variable}}` resolver, the request-building pipeline
 (resolve → auth → `HttpRequestMessage`), sending with response capture
 (`IHttpSender`/`ApiResponse`), a pluggable code generator with a C# `HttpClient`
-client emitter, and a file-based collection loader/saver (`CollectionStore`) — 56 tests green.
-A first Avalonia editor window sends requests through the engine end-to-end.
+client emitter, and a file-based collection loader/saver (`CollectionStore`) — 61 tests green.
+An Avalonia editor (embeddable `ApiClientView`, hosted by a thin standalone app) sends
+requests through the engine end-to-end and shows its tag-derived version.

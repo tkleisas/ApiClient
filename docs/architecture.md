@@ -21,11 +21,19 @@ ApiClient.sln
 │   ├── ApiClient.Core/          UI-free domain logic (this is where the work happens)
 │   │   ├── Model/               Plain data records: ApiRequest, RequestBody, RequestAuth, KeyValueItem
 │   │   ├── Serialization/       RequestSerializer (request <-> JSON file format)
+│   │   ├── Storage/             CollectionStore (folder <-> request tree)
+│   │   ├── Http/                Request building, auth providers, sending, RequestExecutor
+│   │   ├── CodeGen/             ICodeGenerator + C# HttpClient generator
+│   │   ├── Hosting/             IHostServices seam (standalone vs embedded)
 │   │   └── Variables/           VariableResolver ({{var}} substitution)
-│   └── ApiClient.App/           Avalonia UI (MVVM) — planned
+│   ├── ApiClient.UI/            Avalonia views + view models; embeddable ApiClientView control
+│   └── ApiClient.App/           Thin standalone host: a Window that hosts ApiClientView
 └── tests/
     └── ApiClient.Core.Tests/    xUnit tests; the project is developed TDD
 ```
+
+`ApiClient.UI` is a class library so the same `ApiClientView` can be hosted by the
+standalone `App` or embedded in another Avalonia host (see [integration.md](integration.md)).
 
 ### Why a UI-free `Core`
 

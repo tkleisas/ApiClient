@@ -4,13 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ApiClient.Core;
+using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
 using ApiClient.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace ApiClient.App.ViewModels;
+namespace ApiClient.UI.ViewModels;
 
 /// <summary>One editable header row in the request editor.</summary>
 public partial class HeaderRowViewModel : ObservableObject
@@ -26,31 +26,34 @@ public partial class HeaderRowViewModel : ObservableObject
 }
 
 /// <summary>
-/// The main editor: edits a single request (method, URL, headers, body), sends it through
-/// the <see cref="ApiClient.Core"/> engine, and shows the response. Deliberately thin — all
-/// real work happens in <see cref="RequestExecutor"/>.
+/// Edits a single request (method, URL, headers, body), sends it through the
+/// <see cref="ApiClient.Core"/> engine, and shows the response. Deliberately thin — all
+/// real work happens in <see cref="RequestExecutor"/>. This view model backs the embeddable
+/// <c>ApiClientView</c>, so it carries no window/desktop assumptions; the surrounding host
+/// is reached only through <see cref="IHostServices"/>.
 /// </summary>
-public partial class MainWindowViewModel : ViewModelBase
+public partial class RequestEditorViewModel : ViewModelBase
 {
     private static readonly IReadOnlyDictionary<string, string> NoVariables = new Dictionary<string, string>();
 
     private readonly RequestExecutor _executor;
+    private readonly IHostServices _host;
 
-    /// <summary>Design-time / default constructor: wires the real HTTP engine.</summary>
-    public MainWindowViewModel()
-        : this(new RequestExecutor(HttpRequestFactory.CreateDefault(), new HttpClientSender(new HttpClient())))
+    /// <summary>Design-time / default constructor: wires the real HTTP engine and standalone host services.</summary>
+    public RequestEditorViewModel()
+        : this(
+            new RequestExecutor(HttpRequestFactory.CreateDefault(), new HttpClientSender(new HttpClient())),
+            new StandaloneHostServices())
     {
     }
 
-    /// <summary>Creates the view model with an explicit executor (used for testing/DI).</summary>
-    public MainWindowViewModel(RequestExecutor executor)
+    /// <summary>Creates the view model with an explicit executor and host services (used for embedding/testing).</summary>
+    public RequestEditorViewModel(RequestExecutor executor, IHostServices host)
     {
         _executor = executor;
+        _host = host;
         Headers.Add(new HeaderRowViewModel { Name = "Accept", Value = "application/json" });
     }
-
-    /// <summary>The window title, including the running version (from the git tag via MinVer).</summary>
-    public string WindowTitle => $"ApiClient {BuildInfo.Version}";
 
     /// <summary>The HTTP methods offered in the method drop-down.</summary>
     public string[] Methods { get; } = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
@@ -103,11 +106,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 $"{response.StatusCode} {response.ReasonPhrase} · {response.Elapsed.TotalMilliseconds:F0} ms · {FormatSize(response.SizeBytes)}";
             ResponseHeaders = string.Join(Environment.NewLine, response.Headers.Select(h => $"{h.Name}: {h.Value}"));
             ResponseBody = response.Body;
+            _host.ReportStatus(ResponseSummary);
         }
         catch (Exception ex)
         {
             ResponseSummary = "Request failed";
             ResponseBody = ex.Message;
+            _host.ReportStatus(ResponseSummary);
         }
         finally
         {

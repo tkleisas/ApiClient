@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# GitHub Copilot instructions (local only)
+.github/copilot-instructions.md

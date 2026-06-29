@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ApiClient.Core.CodeGen;
 using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
+using ApiClient.Core.Json;
 using ApiClient.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -104,6 +105,44 @@ public partial class RequestEditorViewModel : ViewModelBase
     private string _responseBody = string.Empty;
 
     [ObservableProperty]
+    private string _responsePretty = string.Empty;
+
+    [ObservableProperty]
+    private bool _responseIsJson;
+
+    [ObservableProperty]
+    private bool _wordWrap;
+
+    [ObservableProperty]
+    private string _selectedResponseView = "Pretty";
+
+    /// <summary>The response body view modes.</summary>
+    public string[] ResponseViews { get; } = ["Pretty", "Raw", "Tree"];
+
+    /// <summary>The parsed JSON response, for the expandable color-coded tree (single root, if any).</summary>
+    public ObservableCollection<JsonTreeNode> ResponseTree { get; } = [];
+
+    /// <summary>Whether the Pretty view is selected.</summary>
+    public bool IsPrettyView => SelectedResponseView == "Pretty";
+
+    /// <summary>Whether the Raw view is selected.</summary>
+    public bool IsRawView => SelectedResponseView == "Raw";
+
+    /// <summary>Whether the Tree view is selected.</summary>
+    public bool IsTreeView => SelectedResponseView == "Tree";
+
+    /// <summary>Whether a text-based view (Pretty or Raw) is selected — controls word-wrap visibility.</summary>
+    public bool IsTextResponseView => IsPrettyView || IsRawView;
+
+    partial void OnSelectedResponseViewChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsPrettyView));
+        OnPropertyChanged(nameof(IsRawView));
+        OnPropertyChanged(nameof(IsTreeView));
+        OnPropertyChanged(nameof(IsTextResponseView));
+    }
+
+    [ObservableProperty]
     private ICodeGenerator? _selectedGenerator;
 
     [ObservableProperty]
@@ -167,7 +206,7 @@ public partial class RequestEditorViewModel : ViewModelBase
         IsSending = true;
         ResponseSummary = "Sending…";
         ResponseHeaders = string.Empty;
-        ResponseBody = string.Empty;
+        ShowResponseBody(string.Empty);
 
         try
         {
@@ -175,18 +214,43 @@ public partial class RequestEditorViewModel : ViewModelBase
             ResponseSummary =
                 $"{response.StatusCode} {response.ReasonPhrase} · {response.Elapsed.TotalMilliseconds:F0} ms · {FormatSize(response.SizeBytes)}";
             ResponseHeaders = string.Join(Environment.NewLine, response.Headers.Select(h => $"{h.Name}: {h.Value}"));
-            ResponseBody = response.Body;
+            ShowResponseBody(response.Body);
             _host.ReportStatus(ResponseSummary);
         }
         catch (Exception ex)
         {
             ResponseSummary = "Request failed";
-            ResponseBody = ex.Message;
+            ShowResponseBody(ex.Message);
             _host.ReportStatus(ResponseSummary);
         }
         finally
         {
             IsSending = false;
+        }
+    }
+
+    private void ShowResponseBody(string body)
+    {
+        ResponseBody = body;
+        ResponseTree.Clear();
+
+        if (JsonFormatter.TryPrettify(body, out var pretty))
+        {
+            ResponsePretty = pretty;
+            ResponseIsJson = true;
+            try
+            {
+                ResponseTree.Add(JsonTree.Parse(body));
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                // Prettify succeeded but tree parse failed — leave the tree empty.
+            }
+        }
+        else
+        {
+            ResponsePretty = body;
+            ResponseIsJson = false;
         }
     }
 
@@ -231,7 +295,7 @@ public partial class RequestEditorViewModel : ViewModelBase
 
         ResponseSummary = string.Empty;
         ResponseHeaders = string.Empty;
-        ResponseBody = string.Empty;
+        ShowResponseBody(string.Empty);
     }
 
     private ApiRequest BuildRequest()

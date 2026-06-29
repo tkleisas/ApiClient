@@ -38,7 +38,9 @@ later items slot in additively rather than forcing rewrites.
 - [v2] Dynamic/system vars (`{{$guid}}`, `{{$timestamp}}`), variable scoping
 
 ## Code generation (client + server, C#-first)
-- [MVP] C# `HttpClient` client snippet from a request
+- [done] Pluggable `ICodeGenerator` (Client/Server scenarios)
+- [done] C# `HttpClient` client snippet from a request (method, URL+query, headers,
+  auth via providers, raw/form body, send + read)
 - [v2] Refit + RestSharp client flavors; response JSON → C# records
 - [v2] Server scenario: contract / stub generation
 - [later] curl / Python / JS / TS generators

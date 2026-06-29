@@ -51,7 +51,7 @@ public class TlsHandlerFactoryTests
             });
 
             Assert.NotNull(handler.SslOptions.ClientCertificates);
-            Assert.Equal(1, handler.SslOptions.ClientCertificates!.Count);
+            Assert.Single(handler.SslOptions.ClientCertificates!);
         }
         finally
         {

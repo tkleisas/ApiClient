@@ -24,7 +24,9 @@ later items slot in additively rather than forcing rewrites.
 - [v2] Request chaining (use a value from a previous response)
 
 ## Sending & response
-- [MVP] HTTP send pipeline over `HttpClient`; status, timing, size, response headers
+- [done] Request building stage: resolve variables → apply auth (pluggable `IAuthProvider`:
+  Bearer/Basic/API key) → assemble URL+query, headers, raw/form body → `HttpRequestMessage`
+- [MVP] Actually send over `HttpClient`; capture status, timing, size, response headers
 - [MVP] Body viewer: pretty / raw / preview, syntax highlighting (AvaloniaEdit)
 - [v2] **Tabular view** for JSON arrays via the virtualized data grid
 - [v2] Save response; diff against previous

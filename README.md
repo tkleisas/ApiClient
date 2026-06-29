@@ -47,4 +47,5 @@ runner (for CI) almost free later on.
 ## Status
 
 Early development. Built test-first (TDD). Implemented so far: the request domain
-model + JSON serializer, and the `{{variable}}` resolver — 19 tests green.
+model + JSON serializer, the `{{variable}}` resolver, and the request-building
+pipeline (resolve → auth → `HttpRequestMessage`) — 29 tests green.

@@ -43,7 +43,7 @@
         <StackPanel Spacing="4">
             <TextBlock Text="Client certificate password"/>
             <TextBox PasswordChar="•" Text="{Binding ClientCertificatePassword}"/>
-            <TextBlock Text="Stored in plain text locally. Certificate changes apply after restart."
+            <TextBlock Text="Stored in plain text locally. TLS changes apply immediately on save."
                        FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
         </StackPanel>
 

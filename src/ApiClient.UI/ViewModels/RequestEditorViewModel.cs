@@ -73,6 +73,12 @@ public partial class RequestEditorViewModel : ViewModelBase
         new CSharpMinimalApiGenerator(),
     ];
 
+    /// <summary>The authentication schemes offered in the Auth tab.</summary>
+    public AuthType[] AuthTypes { get; } = [AuthType.None, AuthType.Bearer, AuthType.Basic, AuthType.ApiKey];
+
+    /// <summary>Where an API key can be placed.</summary>
+    public ApiKeyLocation[] ApiKeyLocations { get; } = [ApiKeyLocation.Header, ApiKeyLocation.Query];
+
     [ObservableProperty]
     private string _method = "GET";
 
@@ -102,6 +108,43 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _generatedCode = string.Empty;
+
+    [ObservableProperty]
+    private AuthType _selectedAuthType;
+
+    [ObservableProperty]
+    private string _authToken = string.Empty;
+
+    [ObservableProperty]
+    private string _authUsername = string.Empty;
+
+    [ObservableProperty]
+    private string _authPassword = string.Empty;
+
+    [ObservableProperty]
+    private string _authKeyName = string.Empty;
+
+    [ObservableProperty]
+    private string _authKeyValue = string.Empty;
+
+    [ObservableProperty]
+    private ApiKeyLocation _authKeyLocation;
+
+    /// <summary>Whether the bearer-token fields should be shown.</summary>
+    public bool IsBearerAuth => SelectedAuthType == AuthType.Bearer;
+
+    /// <summary>Whether the basic-auth fields should be shown.</summary>
+    public bool IsBasicAuth => SelectedAuthType == AuthType.Basic;
+
+    /// <summary>Whether the API-key fields should be shown.</summary>
+    public bool IsApiKeyAuth => SelectedAuthType == AuthType.ApiKey;
+
+    partial void OnSelectedAuthTypeChanged(AuthType value)
+    {
+        OnPropertyChanged(nameof(IsBearerAuth));
+        OnPropertyChanged(nameof(IsBasicAuth));
+        OnPropertyChanged(nameof(IsApiKeyAuth));
+    }
 
     [RelayCommand]
     private void GenerateCode()
@@ -167,6 +210,14 @@ public partial class RequestEditorViewModel : ViewModelBase
         foreach (var header in request.Headers)
             Headers.Add(new HeaderRowViewModel { Enabled = header.Enabled, Name = header.Name, Value = header.Value });
 
+        SelectedAuthType = request.Auth.Type;
+        AuthToken = request.Auth.Token ?? string.Empty;
+        AuthUsername = request.Auth.Username ?? string.Empty;
+        AuthPassword = request.Auth.Password ?? string.Empty;
+        AuthKeyName = request.Auth.ApiKeyName ?? string.Empty;
+        AuthKeyValue = request.Auth.ApiKeyValue ?? string.Empty;
+        AuthKeyLocation = request.Auth.ApiKeyLocation;
+
         if (request.Body.Type == BodyType.Raw)
         {
             RequestBody = request.Body.Text ?? string.Empty;
@@ -201,6 +252,16 @@ public partial class RequestEditorViewModel : ViewModelBase
             Url = Url,
             Headers = headers,
             Body = body,
+            Auth = new RequestAuth
+            {
+                Type = SelectedAuthType,
+                Token = AuthToken,
+                Username = AuthUsername,
+                Password = AuthPassword,
+                ApiKeyName = AuthKeyName,
+                ApiKeyValue = AuthKeyValue,
+                ApiKeyLocation = AuthKeyLocation,
+            },
         };
     }
 

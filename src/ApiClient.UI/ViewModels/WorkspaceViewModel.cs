@@ -19,6 +19,7 @@ public partial class WorkspaceViewModel : ViewModelBase
 {
     private readonly CollectionStore _store;
     private readonly SettingsStore _settingsStore;
+    private readonly ReconfigurableHttpSender? _sender;
 
     /// <summary>Default constructor: builds the editor with a TLS-configured HTTP client from saved settings.</summary>
     public WorkspaceViewModel()
@@ -33,9 +34,8 @@ public partial class WorkspaceViewModel : ViewModelBase
         _settingsStore = settingsStore;
         Settings = _settingsStore.Load();
 
-        var executor = new RequestExecutor(
-            HttpRequestFactory.CreateDefault(),
-            new HttpClientSender(TlsHandlerFactory.CreateClient(Settings.ToTlsOptions())));
+        _sender = new ReconfigurableHttpSender(new HttpClientSender(TlsHandlerFactory.CreateClient(Settings.ToTlsOptions())));
+        var executor = new RequestExecutor(HttpRequestFactory.CreateDefault(), _sender);
         Editor = new RequestEditorViewModel(executor, new StandaloneHostServices());
     }
 
@@ -51,11 +51,12 @@ public partial class WorkspaceViewModel : ViewModelBase
     /// <summary>The current application settings.</summary>
     public AppSettings Settings { get; private set; }
 
-    /// <summary>Persists <paramref name="settings"/> and updates <see cref="Settings"/>.</summary>
+    /// <summary>Persists <paramref name="settings"/>, updates <see cref="Settings"/>, and rebuilds the HTTP client so TLS changes apply immediately.</summary>
     public void SaveSettings(AppSettings settings)
     {
         _settingsStore.Save(settings);
         Settings = settings;
+        _sender?.Set(new HttpClientSender(TlsHandlerFactory.CreateClient(settings.ToTlsOptions())));
     }
 
     /// <summary>The request editor shown beside the tree.</summary>

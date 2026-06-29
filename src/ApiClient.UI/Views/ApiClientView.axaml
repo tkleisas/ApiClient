@@ -58,6 +58,31 @@
                         </ItemsControl>
                     </DockPanel>
                 </TabItem>
+                <TabItem Header="Auth">
+                    <StackPanel Margin="2" Spacing="6">
+                        <ComboBox HorizontalAlignment="Left" Width="160"
+                                  ItemsSource="{Binding AuthTypes}" SelectedItem="{Binding SelectedAuthType}"/>
+                        <StackPanel IsVisible="{Binding IsBearerAuth}" Spacing="3">
+                            <TextBlock Text="Token"/>
+                            <TextBox Text="{Binding AuthToken}" TextWrapping="Wrap" AcceptsReturn="False"/>
+                        </StackPanel>
+                        <StackPanel IsVisible="{Binding IsBasicAuth}" Spacing="3">
+                            <TextBlock Text="Username"/>
+                            <TextBox Text="{Binding AuthUsername}"/>
+                            <TextBlock Text="Password"/>
+                            <TextBox Text="{Binding AuthPassword}" PasswordChar="•"/>
+                        </StackPanel>
+                        <StackPanel IsVisible="{Binding IsApiKeyAuth}" Spacing="3">
+                            <TextBlock Text="Key name"/>
+                            <TextBox Text="{Binding AuthKeyName}"/>
+                            <TextBlock Text="Key value"/>
+                            <TextBox Text="{Binding AuthKeyValue}"/>
+                            <TextBlock Text="Add to"/>
+                            <ComboBox HorizontalAlignment="Left" Width="160"
+                                      ItemsSource="{Binding ApiKeyLocations}" SelectedItem="{Binding AuthKeyLocation}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </TabItem>
                 <TabItem Header="Body">
                     <DockPanel Margin="2">
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,3">

@@ -90,6 +90,8 @@ public static class BrunoImporter
                 Requests = LoadRequests(path),
                 Folders = LoadFolders(path),
             })
+            // Drop folders that contain no requests (e.g. Bruno's environments folder).
+            .Where(folder => folder.Requests.Count > 0 || folder.Folders.Count > 0)
             .ToList();
 
     private static RequestBody BuildBody(string mode, List<(string Name, string Inner)> blocks) => mode switch

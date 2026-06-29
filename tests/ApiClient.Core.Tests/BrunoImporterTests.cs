@@ -196,6 +196,28 @@ public class BrunoImporterTests
         }
     }
 
+    [Fact]
+    public void Import_collection_prunes_folders_with_no_requests()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "BrunoImportTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(Path.Combine(root, "environments"));
+        Directory.CreateDirectory(Path.Combine(root, "empty"));
+        try
+        {
+            File.WriteAllText(Path.Combine(root, "ping.bru"), SimpleGetBru("Ping", "https://h/ping"));
+            File.WriteAllText(Path.Combine(root, "environments", "env.bru"), "vars {\n  x: 1\n}");
+
+            var collection = BrunoImporter.ImportCollection(root);
+
+            Assert.Empty(collection.Folders);
+            Assert.Single(collection.Requests);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     private static string SimpleGetBru(string name, string url) => $$"""
         meta {
           name: {{name}}

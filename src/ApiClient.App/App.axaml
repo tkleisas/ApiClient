@@ -2,10 +2,47 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ApiClient.App.App"
              xmlns:local="using:ApiClient.App"
+             xmlns:sys="using:System"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
+    <Application.Resources>
+        <!-- Compact base font for controls; overridden at startup from saved settings. -->
+        <sys:Double x:Key="ControlContentThemeFontSize">12</sys:Double>
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
+
+        <!-- Compact / dense layout: smaller control heights, tighter padding, smaller tab/menu text. -->
+        <Style Selector="TextBox">
+            <Setter Property="MinHeight" Value="26"/>
+            <Setter Property="Padding" Value="6,2"/>
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="MinHeight" Value="26"/>
+            <Setter Property="Padding" Value="10,3"/>
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="MinHeight" Value="26"/>
+            <Setter Property="Padding" Value="8,2"/>
+        </Style>
+        <Style Selector="NumericUpDown">
+            <Setter Property="MinHeight" Value="26"/>
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="MinHeight" Value="28"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,4"/>
+        </Style>
+        <Style Selector="TreeViewItem">
+            <Setter Property="MinHeight" Value="22"/>
+        </Style>
+        <Style Selector="MenuItem">
+            <Setter Property="MinHeight" Value="24"/>
+        </Style>
+        <Style Selector="CheckBox">
+            <Setter Property="MinHeight" Value="22"/>
+        </Style>
     </Application.Styles>
 </Application>

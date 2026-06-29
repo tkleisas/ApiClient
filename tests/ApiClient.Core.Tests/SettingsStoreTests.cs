@@ -17,7 +17,7 @@ public class SettingsStoreTests
         var settings = new SettingsStore(TempFile()).Load();
 
         Assert.Equal(AppTheme.System, settings.Theme);
-        Assert.Equal(14, settings.FontSize);
+        Assert.Equal(12, settings.FontSize);
         Assert.Equal(string.Empty, settings.FontFamily);
     }
 

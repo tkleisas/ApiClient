@@ -22,6 +22,8 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var workspace = new WorkspaceViewModel();
+            // Apply theme + control font size before building the window so controls pick it up.
+            AppearanceService.Apply(workspace.Settings, null);
             var window = new MainWindow { DataContext = workspace };
             desktop.MainWindow = window;
             AppearanceService.Apply(workspace.Settings, window);

@@ -20,6 +20,10 @@ public static class AppearanceService
                 AppTheme.Dark => ThemeVariant.Dark,
                 _ => ThemeVariant.Default,
             };
+
+            // Drive the base control font size so all controls scale, not just inherited text.
+            if (settings.FontSize > 0)
+                app.Resources["ControlContentThemeFontSize"] = settings.FontSize;
         }
 
         if (window is null)

@@ -21,7 +21,7 @@ public partial class SettingsViewModel : ViewModelBase
     private string _fontFamily = DefaultFont;
 
     [ObservableProperty]
-    private double _fontSize = 14;
+    private double _fontSize = 12;
 
     [ObservableProperty]
     private bool _allowInvalidServerCertificates;

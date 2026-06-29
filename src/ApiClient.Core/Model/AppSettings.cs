@@ -28,8 +28,8 @@ public record AppSettings
     /// <summary>The UI font family; empty means use the application default.</summary>
     public string FontFamily { get; init; } = string.Empty;
 
-    /// <summary>The base UI font size in points. Defaults to 14.</summary>
-    public double FontSize { get; init; } = 14;
+    /// <summary>The base UI font size in points. Defaults to 12 (a compact, dense layout).</summary>
+    public double FontSize { get; init; } = 12;
 
     /// <summary>When true, server certificate validation errors are ignored (e.g. self-signed certs in dev).</summary>
     public bool AllowInvalidServerCertificates { get; init; }

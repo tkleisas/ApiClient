@@ -12,17 +12,17 @@
         <vm:RequestEditorViewModel/>
     </Design.DataContext>
 
-    <DockPanel Margin="8">
+    <DockPanel Margin="4">
 
         <!-- Request bar -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto">
-            <ComboBox Grid.Column="0" Width="110"
+            <ComboBox Grid.Column="0" Width="96"
                       ItemsSource="{Binding Methods}"
                       SelectedItem="{Binding Method}"/>
-            <TextBox Grid.Column="1" Margin="8,0"
+            <TextBox Grid.Column="1" Margin="4,0"
                      Text="{Binding Url}"
                      PlaceholderText="https://example.com/api"/>
-            <Button Grid.Column="2" Width="90"
+            <Button Grid.Column="2" Width="80"
                     Content="Send"
                     HorizontalContentAlignment="Center"
                     IsEnabled="{Binding !IsSending}"
@@ -30,7 +30,7 @@
         </Grid>
 
         <!-- Request config / response, vertically resizable -->
-        <Grid RowDefinitions="2*,Auto,3*" Margin="0,8,0,0">
+        <Grid RowDefinitions="2*,Auto,3*" Margin="0,4,0,0">
 
             <!-- Request configuration -->
             <TabControl Grid.Row="0">
@@ -42,7 +42,7 @@
                         <ItemsControl ItemsSource="{Binding Headers}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:CompileBindings="False">
-                                    <Grid ColumnDefinitions="Auto,*,*,Auto" Margin="0,2">
+                                    <Grid ColumnDefinitions="Auto,*,*,Auto" Margin="0,1">
                                         <CheckBox Grid.Column="0" VerticalAlignment="Center"
                                                   IsChecked="{Binding Enabled}"/>
                                         <TextBox Grid.Column="1" Margin="4,0" PlaceholderText="Name"

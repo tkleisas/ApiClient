@@ -11,7 +11,9 @@ later items slot in additively rather than forcing rewrites.
 - [done] Request file format + serializer (`.req.json`, versioned, forward-compatible)
 - [done] Folder-based collection loader/saver (`CollectionStore`): nested folders ↔
   request tree, `collection.json` manifest, `*.req.json` files, round-trips on disk
-- [MVP] Tree view, open/save, nested folders, drag-reorder
+- [done] Collection explorer in the UI: open a folder, browse the nested tree, click a
+  request to load it into the editor (`WorkspaceView`/`WorkspaceViewModel`)
+- [MVP] Save edits back to disk; rename/add/delete; drag-reorder
 - [v2] Folder-level inherited settings (base URL, shared auth/headers)
 - [later] Collection-level scripting hooks
 

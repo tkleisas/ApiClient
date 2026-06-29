@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ApiClient.UI.ViewModels"
+             xmlns:views="using:ApiClient.UI.Views"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
+             x:Class="ApiClient.UI.Views.WorkspaceView"
+             x:DataType="vm:WorkspaceViewModel">
+
+    <Design.DataContext>
+        <vm:WorkspaceViewModel/>
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="260,Auto,*">
+
+        <!-- Collection explorer -->
+        <DockPanel Grid.Column="0">
+            <Button DockPanel.Dock="Top" Margin="4" HorizontalAlignment="Stretch"
+                    Content="Open collection…" Click="OnOpenCollection"/>
+            <TreeView ItemsSource="{Binding Nodes}"
+                      SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding Children}" x:DataType="vm:CollectionNodeViewModel">
+                        <TextBlock Text="{Binding Title}" Padding="0,2"/>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </DockPanel>
+
+        <GridSplitter Grid.Column="1" Width="6" ResizeDirection="Columns" Background="Transparent"/>
+
+        <!-- Request editor (the embeddable control) -->
+        <views:ApiClientView Grid.Column="2" DataContext="{Binding Editor}"/>
+    </Grid>
+</UserControl>

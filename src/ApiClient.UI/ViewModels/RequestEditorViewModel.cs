@@ -126,6 +126,32 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     partial void OnUrlChanged(string value) => SendCommand.NotifyCanExecuteChanged();
 
+    /// <summary>Loads <paramref name="request"/> into the editor, replacing the current contents and clearing any prior response.</summary>
+    public void LoadFrom(ApiRequest request)
+    {
+        Method = request.Method;
+        Url = request.Url;
+
+        Headers.Clear();
+        foreach (var header in request.Headers)
+            Headers.Add(new HeaderRowViewModel { Enabled = header.Enabled, Name = header.Name, Value = header.Value });
+
+        if (request.Body.Type == BodyType.Raw)
+        {
+            RequestBody = request.Body.Text ?? string.Empty;
+            if (!string.IsNullOrEmpty(request.Body.MediaType))
+                BodyMediaType = request.Body.MediaType;
+        }
+        else
+        {
+            RequestBody = string.Empty;
+        }
+
+        ResponseSummary = string.Empty;
+        ResponseHeaders = string.Empty;
+        ResponseBody = string.Empty;
+    }
+
     private ApiRequest BuildRequest()
     {
         var headers = Headers

@@ -1,0 +1,75 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using ApiClient.Core.Model;
+using ApiClient.Core.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace ApiClient.UI.ViewModels;
+
+/// <summary>
+/// The standalone shell: a collection explorer (tree of folders/requests) alongside the
+/// request <see cref="Editor"/>. Selecting a request node loads it into the editor.
+/// </summary>
+public partial class WorkspaceViewModel : ViewModelBase
+{
+    private readonly CollectionStore _store;
+
+    /// <summary>Default constructor: a fresh editor and the file-based collection store.</summary>
+    public WorkspaceViewModel()
+        : this(new RequestEditorViewModel(), new CollectionStore())
+    {
+    }
+
+    /// <summary>Creates the workspace with an explicit editor and store (used for testing).</summary>
+    public WorkspaceViewModel(RequestEditorViewModel editor, CollectionStore store)
+    {
+        Editor = editor;
+        _store = store;
+    }
+
+    /// <summary>The request editor shown beside the tree.</summary>
+    public RequestEditorViewModel Editor { get; }
+
+    /// <summary>Root nodes of the loaded collection.</summary>
+    public ObservableCollection<CollectionNodeViewModel> Nodes { get; } = [];
+
+    [ObservableProperty]
+    private CollectionNodeViewModel? _selectedNode;
+
+    /// <summary>Loads the collection rooted at <paramref name="directory"/> into the tree.</summary>
+    public void LoadCollection(string directory)
+    {
+        var collection = _store.Load(directory);
+        Nodes.Clear();
+        Nodes.Add(BuildRoot(collection));
+    }
+
+    partial void OnSelectedNodeChanged(CollectionNodeViewModel? value)
+    {
+        if (value is { IsRequest: true, Request: not null })
+            Editor.LoadFrom(value.Request);
+    }
+
+    private static CollectionNodeViewModel BuildRoot(Collection collection)
+    {
+        var root = CollectionNodeViewModel.Folder(collection.Name);
+        AddChildren(root, collection.Folders, collection.Requests);
+        return root;
+    }
+
+    private static void AddChildren(
+        CollectionNodeViewModel node,
+        IReadOnlyList<CollectionFolder> folders,
+        IReadOnlyList<ApiRequest> requests)
+    {
+        foreach (var request in requests)
+            node.Children.Add(CollectionNodeViewModel.ForRequest(request));
+
+        foreach (var folder in folders)
+        {
+            var folderNode = CollectionNodeViewModel.Folder(folder.Name);
+            AddChildren(folderNode, folder.Folders, folder.Requests);
+            node.Children.Add(folderNode);
+        }
+    }
+}

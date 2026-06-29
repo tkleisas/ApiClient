@@ -6,10 +6,10 @@
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
         x:Class="ApiClient.App.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Width="900" Height="650">
+        Width="1000" Height="650">
 
-    <!-- The standalone host simply embeds the reusable ApiClientView.
-         The same control can be hosted as a panel inside another Avalonia app. -->
-    <views:ApiClientView/>
+    <!-- The standalone host embeds the workspace shell (collection explorer + editor).
+         The editor on its own (ApiClientView) is the unit embedded into other hosts. -->
+    <views:WorkspaceView/>
 
 </Window>

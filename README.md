@@ -49,5 +49,5 @@ runner (for CI) almost free later on.
 Early development. Built test-first (TDD). Implemented so far: the request domain
 model + JSON serializer, the `{{variable}}` resolver, the request-building pipeline
 (resolve → auth → `HttpRequestMessage`), sending with response capture
-(`IHttpSender`/`ApiResponse`), and a pluggable code generator with a C# `HttpClient`
-client emitter — 47 tests green.
+(`IHttpSender`/`ApiResponse`), a pluggable code generator with a C# `HttpClient`
+client emitter, and a file-based collection loader/saver (`CollectionStore`) — 55 tests green.

@@ -9,7 +9,8 @@ later items slot in additively rather than forcing rewrites.
 
 ## Collections & storage
 - [done] Request file format + serializer (`.req.json`, versioned, forward-compatible)
-- [MVP] Folder-based collection loader (filesystem ↔ request tree) + `collection.json`
+- [done] Folder-based collection loader/saver (`CollectionStore`): nested folders ↔
+  request tree, `collection.json` manifest, `*.req.json` files, round-trips on disk
 - [MVP] Tree view, open/save, nested folders, drag-reorder
 - [v2] Folder-level inherited settings (base URL, shared auth/headers)
 - [later] Collection-level scripting hooks

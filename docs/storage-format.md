@@ -26,8 +26,9 @@ my-collection/
   file that is git-ignored by default, so sharing a collection never leaks tokens.
   Requests reference them via `{{variables}}` (see below) rather than inlining them.
 
-> Status: the request file format below is **implemented**. The collection manifest,
-> folder loader, and environment files are **planned** (see [roadmap.md](roadmap.md)).
+> Status: the request file format, the `collection.json` manifest, and the folder
+> loader/saver (`CollectionStore`) are **implemented**. Environment files are **planned**
+> (see [roadmap.md](roadmap.md)).
 
 ## Request file format (implemented)
 

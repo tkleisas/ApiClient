@@ -17,7 +17,9 @@ later items slot in additively rather than forcing rewrites.
 
 ## Request editor
 - [done] Request model (method, URL, headers, query, body, auth)
-- [MVP] Editor UI for all of the above; path variables
+- [done] First Avalonia editor UI: method, URL, headers, raw body + Send, wired to
+  the engine via `RequestExecutor`; response shows status/time/size, body, headers
+- [MVP] Editor UI for the rest (query/form/auth tabs); path variables
 - [MVP] Bodies: raw (JSON/text/XML), form-urlencoded, multipart/form-data
 - [MVP] Auth: none, Bearer, Basic, API key
 - [v2] OAuth2 flows

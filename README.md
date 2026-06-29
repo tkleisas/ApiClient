@@ -31,7 +31,8 @@ These are commitments, not marketing. They drive real design decisions:
 
 - `src/ApiClient.Core` — UI-free domain logic: HTTP engine, collection storage,
   variable resolution, auth, code generation. Pure and fully unit-tested.
-- `src/ApiClient.App` *(later)* — Avalonia UI (MVVM).
+- `src/ApiClient.App` — Avalonia UI (MVVM). First editor window: method/URL/headers/
+  body + Send, wired to the engine; shows status, timing, size, response body & headers.
 - `tests/ApiClient.Core.Tests` — xUnit tests. The project is developed test-first.
 
 Keeping `Core` free of UI dependencies keeps it testable and makes a headless CLI
@@ -50,4 +51,5 @@ Early development. Built test-first (TDD). Implemented so far: the request domai
 model + JSON serializer, the `{{variable}}` resolver, the request-building pipeline
 (resolve → auth → `HttpRequestMessage`), sending with response capture
 (`IHttpSender`/`ApiResponse`), a pluggable code generator with a C# `HttpClient`
-client emitter, and a file-based collection loader/saver (`CollectionStore`) — 55 tests green.
+client emitter, and a file-based collection loader/saver (`CollectionStore`) — 56 tests green.
+A first Avalonia editor window sends requests through the engine end-to-end.

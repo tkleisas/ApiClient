@@ -41,4 +41,7 @@ public record ApiRequest
 
     /// <summary>Optional free-form documentation for the request.</summary>
     public string? Description { get; init; }
+
+    /// <summary>Declarative post-response scripting (extractions and assertions).</summary>
+    public RequestScript Script { get; init; } = new RequestScript();
 }

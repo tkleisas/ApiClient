@@ -137,6 +137,31 @@ public class RequestSerializerTests
     }
 
     [Fact]
+    public void Round_trips_the_script()
+    {
+        var original = SampleRequest() with
+        {
+            Script = new RequestScript { PreRequest = "bru.setVar('a',1)", PostResponse = "test('ok', function(){})" },
+        };
+
+        var restored = Serializer().Deserialize(Serializer().Serialize(original));
+
+        Assert.Equal("bru.setVar('a',1)", restored.Script.PreRequest);
+        Assert.Equal("test('ok', function(){})", restored.Script.PostResponse);
+    }
+
+    [Fact]
+    public void Missing_script_defaults_to_empty()
+    {
+        const string json = """{ "version": 1, "name": "X", "url": "http://x" }""";
+
+        var restored = Serializer().Deserialize(json);
+
+        Assert.Equal(string.Empty, restored.Script.PreRequest);
+        Assert.Equal(string.Empty, restored.Script.PostResponse);
+    }
+
+    [Fact]
     public void Deserialize_throws_on_invalid_json()
     {
         Assert.ThrowsAny<JsonException>(() => Serializer().Deserialize("{ not valid"));

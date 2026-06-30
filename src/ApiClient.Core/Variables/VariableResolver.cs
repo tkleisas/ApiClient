@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -34,6 +35,9 @@ public sealed partial class VariableResolver
             if (variables.TryGetValue(name, out var replacement))
                 return replacement;
 
+            if (TryResolveDynamic(name, out var dynamic))
+                return dynamic;
+
             unresolved ??= [];
             if (!unresolved.Contains(name))
                 unresolved.Add(name);
@@ -41,6 +45,29 @@ public sealed partial class VariableResolver
         });
 
         return new ResolutionResult(value, unresolved ?? (IReadOnlyList<string>)[]);
+    }
+
+    /// <summary>Resolves built-in dynamic tokens (e.g. <c>{{$guid}}</c>, <c>{{$timestamp}}</c>), generated fresh each call.</summary>
+    private static bool TryResolveDynamic(string name, out string value)
+    {
+        switch (name)
+        {
+            case "$guid":
+                value = Guid.NewGuid().ToString();
+                return true;
+            case "$timestamp":
+                value = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+                return true;
+            case "$isoTimestamp":
+                value = DateTimeOffset.UtcNow.ToString("o");
+                return true;
+            case "$randomInt":
+                value = Random.Shared.Next(0, 100000).ToString();
+                return true;
+            default:
+                value = string.Empty;
+                return false;
+        }
     }
 }
 

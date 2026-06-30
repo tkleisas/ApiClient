@@ -58,6 +58,26 @@ public static class BrunoImporter
         Folders = LoadFolders(directory),
     };
 
+    /// <summary>
+    /// Imports Bruno environments from the collection's <c>environments/</c> folder. Each
+    /// <c>*.bru</c> file there defines a <c>vars { }</c> block; the file name is the environment name.
+    /// </summary>
+    public static IReadOnlyList<ApiEnvironment> ImportEnvironments(string directory)
+    {
+        var folder = Path.Combine(directory, "environments");
+        if (!Directory.Exists(folder))
+            return [];
+
+        return Directory.EnumerateFiles(folder, "*.bru")
+            .OrderBy(p => p, StringComparer.Ordinal)
+            .Select(path => new ApiEnvironment
+            {
+                Name = Path.GetFileNameWithoutExtension(path),
+                Variables = ParseEntries(FindBlock(ScanBlocks(File.ReadAllText(path)), "vars")),
+            })
+            .ToList();
+    }
+
     private static IReadOnlyList<ApiRequest> LoadRequests(string directory)
     {
         var requests = new List<ApiRequest>();

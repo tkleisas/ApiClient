@@ -50,7 +50,9 @@ later items slot in additively rather than forcing rewrites.
 
 ## Environments & variables
 - [done] `{{var}}` resolution engine (unknown tokens preserved; unresolved reported)
-- [MVP] Named environments; secrets in a git-ignored file
+- [done] Named environments (`ApiEnvironment`/`EnvironmentStore`), UI selector, applied
+  on send; Bruno environments imported from `environments/*.bru`
+- [MVP] Edit environments in the UI; secrets in a git-ignored file
 - [v2] Dynamic/system vars (`{{$guid}}`, `{{$timestamp}}`), variable scoping
 
 ## Code generation (client + server, C#-first)

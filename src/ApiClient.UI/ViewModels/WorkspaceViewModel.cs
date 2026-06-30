@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
 using ApiClient.Core.ImportExport;
@@ -20,6 +21,7 @@ public partial class WorkspaceViewModel : ViewModelBase
     private readonly CollectionStore _store;
     private readonly SettingsStore _settingsStore;
     private readonly ReconfigurableHttpSender? _sender;
+    private readonly EnvironmentStore _environmentStore = new();
 
     /// <summary>Default constructor: builds the editor with a TLS-configured HTTP client from saved settings.</summary>
     public WorkspaceViewModel()
@@ -65,8 +67,25 @@ public partial class WorkspaceViewModel : ViewModelBase
     /// <summary>Root nodes of the loaded collection.</summary>
     public ObservableCollection<CollectionNodeViewModel> Nodes { get; } = [];
 
+    /// <summary>The collection's environments (e.g. Local / UAT / Prod).</summary>
+    public ObservableCollection<ApiEnvironment> Environments { get; } = [];
+
     [ObservableProperty]
     private CollectionNodeViewModel? _selectedNode;
+
+    [ObservableProperty]
+    private ApiEnvironment? _selectedEnvironment;
+
+    partial void OnSelectedEnvironmentChanged(ApiEnvironment? value)
+        => Editor.Variables = value?.ToVariableMap() ?? new Dictionary<string, string>();
+
+    private void SetEnvironments(IReadOnlyList<ApiEnvironment> environments)
+    {
+        Environments.Clear();
+        foreach (var environment in environments)
+            Environments.Add(environment);
+        SelectedEnvironment = Environments.FirstOrDefault();
+    }
 
     /// <summary>Loads the collection rooted at <paramref name="directory"/> into the tree.</summary>
     public void LoadCollection(string directory)
@@ -74,6 +93,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         var collection = _store.Load(directory);
         Nodes.Clear();
         Nodes.Add(BuildRoot(collection, directory));
+        SetEnvironments(_environmentStore.Load(directory));
     }
 
     /// <summary>Imports a Bruno (<c>.bru</c>) collection folder into the tree. Saving a request converts it to the native format.</summary>
@@ -82,6 +102,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         var collection = BrunoImporter.ImportCollection(directory);
         Nodes.Clear();
         Nodes.Add(BuildRoot(collection, directory));
+        SetEnvironments(BrunoImporter.ImportEnvironments(directory));
     }
 
     /// <summary>Whether the current selection is a saved request that can be written back to disk.</summary>

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:ApiClient.UI.ViewModels"
              xmlns:views="using:ApiClient.UI.Views"
+             xmlns:model="using:ApiClient.Core.Model"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
@@ -18,23 +19,37 @@
 
     <DockPanel>
 
-        <!-- Menu -->
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open Collection…" Click="OnOpenCollection"/>
-                <MenuItem Header="Import _Bruno collection…" Click="OnImportBruno"/>
-                <MenuItem Header="_Save Request" Command="{Binding SaveSelectedRequestCommand}"
-                          InputGesture="Ctrl+S"/>
-                <Separator/>
-                <MenuItem Header="E_xit" Click="OnExit"/>
-            </MenuItem>
-            <MenuItem Header="_Tools">
-                <MenuItem Header="_Settings…" Click="OnSettings"/>
-            </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About ApiClient" Click="OnAbout"/>
-            </MenuItem>
-        </Menu>
+        <!-- Menu + environment selector -->
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto">
+            <Menu Grid.Column="0">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open Collection…" Click="OnOpenCollection"/>
+                    <MenuItem Header="Import _Bruno collection…" Click="OnImportBruno"/>
+                    <MenuItem Header="_Save Request" Command="{Binding SaveSelectedRequestCommand}"
+                              InputGesture="Ctrl+S"/>
+                    <Separator/>
+                    <MenuItem Header="E_xit" Click="OnExit"/>
+                </MenuItem>
+                <MenuItem Header="_Tools">
+                    <MenuItem Header="_Settings…" Click="OnSettings"/>
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_About ApiClient" Click="OnAbout"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,6,0">
+                <TextBlock Text="Env:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <ComboBox Width="150" PlaceholderText="(none)"
+                          ItemsSource="{Binding Environments}"
+                          SelectedItem="{Binding SelectedEnvironment}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="model:ApiEnvironment">
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
 
         <Grid ColumnDefinitions="220,Auto,*">
 

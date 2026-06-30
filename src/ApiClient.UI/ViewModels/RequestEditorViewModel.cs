@@ -61,6 +61,9 @@ public partial class RequestEditorViewModel : ViewModelBase
     /// <summary>The name of the request being edited (preserved so saves overwrite the right file).</summary>
     public string RequestName { get; set; } = "Untitled";
 
+    /// <summary>Variables (from the active environment) used to resolve <c>{{tokens}}</c> when sending.</summary>
+    public IReadOnlyDictionary<string, string> Variables { get; set; } = NoVariables;
+
     /// <summary>The HTTP methods offered in the method drop-down.</summary>
     public string[] Methods { get; } = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
 
@@ -210,7 +213,7 @@ public partial class RequestEditorViewModel : ViewModelBase
 
         try
         {
-            var response = await _executor.ExecuteAsync(BuildRequest(), NoVariables);
+            var response = await _executor.ExecuteAsync(BuildRequest(), Variables);
             ResponseSummary =
                 $"{response.StatusCode} {response.ReasonPhrase} · {response.Elapsed.TotalMilliseconds:F0} ms · {FormatSize(response.SizeBytes)}";
             ResponseHeaders = string.Join(Environment.NewLine, response.Headers.Select(h => $"{h.Name}: {h.Value}"));

@@ -31,6 +31,7 @@
                     <MenuItem Header="E_xit" Click="OnExit"/>
                 </MenuItem>
                 <MenuItem Header="_Tools">
+                    <MenuItem Header="_Environments…" Click="OnEnvironments"/>
                     <MenuItem Header="_Settings…" Click="OnSettings"/>
                 </MenuItem>
                 <MenuItem Header="_Help">

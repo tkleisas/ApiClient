@@ -33,14 +33,25 @@ public sealed class EnvironmentStore
 
     /// <summary>Saves <paramref name="environment"/> into the collection's <c>environments/</c> folder.</summary>
     public void Save(ApiEnvironment environment, string collectionDirectory)
+        => File.WriteAllText(FilePathFor(environment.Name, collectionDirectory, createFolder: true),
+            JsonSerializer.Serialize(environment, RequestSerializer.Options));
+
+    /// <summary>Deletes the file for the environment named <paramref name="name"/>, if it exists.</summary>
+    public void Delete(string name, string collectionDirectory)
+    {
+        var path = FilePathFor(name, collectionDirectory, createFolder: false);
+        if (File.Exists(path))
+            File.Delete(path);
+    }
+
+    private static string FilePathFor(string name, string collectionDirectory, bool createFolder)
     {
         var folder = Path.Combine(collectionDirectory, FolderName);
-        Directory.CreateDirectory(folder);
+        if (createFolder)
+            Directory.CreateDirectory(folder);
 
         var invalid = Path.GetInvalidFileNameChars();
-        var safe = new string(environment.Name.Select(c => invalid.Contains(c) ? '_' : c).ToArray());
-        File.WriteAllText(
-            Path.Combine(folder, safe + FileSuffix),
-            JsonSerializer.Serialize(environment, RequestSerializer.Options));
+        var safe = new string(name.Select(c => invalid.Contains(c) ? '_' : c).ToArray());
+        return Path.Combine(folder, safe + FileSuffix);
     }
 }

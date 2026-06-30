@@ -50,6 +50,9 @@ public partial class WorkspaceViewModel : ViewModelBase
         Settings = _settingsStore.Load();
     }
 
+    /// <summary>The directory of the currently loaded collection, or null if none is open.</summary>
+    public string? CollectionDirectory { get; private set; }
+
     /// <summary>The current application settings.</summary>
     public AppSettings Settings { get; private set; }
 
@@ -93,6 +96,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         var collection = _store.Load(directory);
         Nodes.Clear();
         Nodes.Add(BuildRoot(collection, directory));
+        CollectionDirectory = directory;
         SetEnvironments(_environmentStore.Load(directory));
     }
 
@@ -102,7 +106,27 @@ public partial class WorkspaceViewModel : ViewModelBase
         var collection = BrunoImporter.ImportCollection(directory);
         Nodes.Clear();
         Nodes.Add(BuildRoot(collection, directory));
+        CollectionDirectory = directory;
         SetEnvironments(BrunoImporter.ImportEnvironments(directory));
+    }
+
+    /// <summary>Persists the edited <paramref name="environments"/> to the open collection's folder (deleting removed ones).</summary>
+    public void SaveEnvironments(IReadOnlyList<ApiEnvironment> environments)
+    {
+        if (CollectionDirectory is null)
+            return;
+
+        var keep = environments.Select(e => e.Name).ToHashSet();
+        foreach (var existing in Environments.ToList())
+        {
+            if (!keep.Contains(existing.Name))
+                _environmentStore.Delete(existing.Name, CollectionDirectory);
+        }
+
+        foreach (var environment in environments)
+            _environmentStore.Save(environment, CollectionDirectory);
+
+        SetEnvironments(environments);
     }
 
     /// <summary>Whether the current selection is a saved request that can be written back to disk.</summary>

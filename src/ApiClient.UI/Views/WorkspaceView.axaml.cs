@@ -60,6 +60,23 @@ public partial class WorkspaceView : UserControl
             about.Show();
     }
 
+    private async void OnEnvironments(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not WorkspaceViewModel workspace)
+            return;
+
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        var dialog = new EnvironmentsWindow(workspace.Environments);
+
+        if (owner is not null)
+            await dialog.ShowDialog(owner);
+        else
+            dialog.Show();
+
+        if (dialog.Saved)
+            workspace.SaveEnvironments(dialog.ViewModel.ToEnvironments());
+    }
+
     private async void OnSettings(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not WorkspaceViewModel workspace)

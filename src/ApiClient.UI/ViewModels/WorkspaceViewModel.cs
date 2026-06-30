@@ -59,9 +59,22 @@ public partial class WorkspaceViewModel : ViewModelBase
     /// <summary>Persists <paramref name="settings"/>, updates <see cref="Settings"/>, and rebuilds the HTTP client so TLS changes apply immediately.</summary>
     public void SaveSettings(AppSettings settings)
     {
-        _settingsStore.Save(settings);
-        Settings = settings;
-        _sender?.Set(new HttpClientSender(TlsHandlerFactory.CreateClient(settings.ToTlsOptions())));
+        // Preserve the remembered collection (the settings dialog doesn't edit it).
+        var merged = settings with
+        {
+            LastCollectionDirectory = Settings.LastCollectionDirectory,
+            LastCollectionIsBruno = Settings.LastCollectionIsBruno,
+        };
+
+        _settingsStore.Save(merged);
+        Settings = merged;
+        _sender?.Set(new HttpClientSender(TlsHandlerFactory.CreateClient(merged.ToTlsOptions())));
+    }
+
+    private void RememberLastCollection(string directory, bool isBruno)
+    {
+        Settings = Settings with { LastCollectionDirectory = directory, LastCollectionIsBruno = isBruno };
+        _settingsStore.Save(Settings);
     }
 
     /// <summary>The request editor shown beside the tree.</summary>
@@ -98,6 +111,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         Nodes.Add(BuildRoot(collection, directory));
         CollectionDirectory = directory;
         SetEnvironments(_environmentStore.Load(directory));
+        RememberLastCollection(directory, isBruno: false);
     }
 
     /// <summary>Imports a Bruno (<c>.bru</c>) collection folder into the tree. Saving a request converts it to the native format.</summary>
@@ -108,6 +122,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         Nodes.Add(BuildRoot(collection, directory));
         CollectionDirectory = directory;
         SetEnvironments(BrunoImporter.ImportEnvironments(directory));
+        RememberLastCollection(directory, isBruno: true);
     }
 
     /// <summary>Persists the edited <paramref name="environments"/> to the open collection's folder (deleting removed ones).</summary>

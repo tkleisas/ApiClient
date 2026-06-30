@@ -1,10 +1,15 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="using:ApiClient.UI.Converters"
         x:Class="ApiClient.UI.Views.SettingsWindow"
         x:CompileBindings="False"
         Title="Settings"
         Width="380" SizeToContent="Height" CanResize="False"
         WindowStartupLocation="CenterOwner">
+
+    <Window.Resources>
+        <conv:HexToBrushConverter x:Key="HexBrush"/>
+    </Window.Resources>
 
     <StackPanel Margin="14" Spacing="8">
 
@@ -23,6 +28,31 @@
         <StackPanel Spacing="4">
             <TextBlock Text="Font size"/>
             <NumericUpDown Minimum="8" Maximum="32" Increment="1" Value="{Binding FontSize}"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Accent color"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox Grid.Column="0" Text="{Binding AccentColor}" PlaceholderText="#0078D4 (empty = default)"/>
+                <Border Grid.Column="1" Width="26" Margin="6,0,0,0" CornerRadius="3"
+                        Background="{Binding AccentColor, Converter={StaticResource HexBrush}}"
+                        BorderBrush="#80808080" BorderThickness="1"/>
+            </Grid>
+            <ItemsControl ItemsSource="{Binding AccentPresets}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="4"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Width="22" Height="22" Padding="0"
+                                Background="{Binding Converter={StaticResource HexBrush}}"
+                                Command="{Binding $parent[ItemsControl].DataContext.SetAccentCommand}"
+                                CommandParameter="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </StackPanel>
 
         <Separator/>

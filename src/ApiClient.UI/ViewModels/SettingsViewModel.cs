@@ -1,5 +1,6 @@
 using ApiClient.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ApiClient.UI.ViewModels;
 
@@ -24,6 +25,15 @@ public partial class SettingsViewModel : ViewModelBase
     private double _fontSize = 12;
 
     [ObservableProperty]
+    private string _accentColor = string.Empty;
+
+    /// <summary>Preset accent colors offered as swatches; empty string = system default.</summary>
+    public string[] AccentPresets { get; } = ["", "#0078D4", "#2E7D32", "#6A1B9A", "#C62828", "#EF6C00", "#00838F"];
+
+    [RelayCommand]
+    private void SetAccent(string? hex) => AccentColor = hex ?? string.Empty;
+
+    [ObservableProperty]
     private bool _allowInvalidServerCertificates;
 
     [ObservableProperty]
@@ -43,6 +53,7 @@ public partial class SettingsViewModel : ViewModelBase
         Theme = settings.Theme;
         FontFamily = string.IsNullOrEmpty(settings.FontFamily) ? DefaultFont : settings.FontFamily;
         FontSize = settings.FontSize;
+        AccentColor = settings.AccentColor;
         AllowInvalidServerCertificates = settings.AllowInvalidServerCertificates;
         ClientCertificatePath = settings.ClientCertificatePath;
         ClientCertificatePassword = settings.ClientCertificatePassword;
@@ -54,6 +65,7 @@ public partial class SettingsViewModel : ViewModelBase
         Theme = Theme,
         FontFamily = FontFamily == DefaultFont ? string.Empty : FontFamily,
         FontSize = FontSize,
+        AccentColor = AccentColor,
         AllowInvalidServerCertificates = AllowInvalidServerCertificates,
         ClientCertificatePath = ClientCertificatePath,
         ClientCertificatePassword = ClientCertificatePassword,

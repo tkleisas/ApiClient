@@ -28,6 +28,17 @@ public class SettingsViewModelTests
     }
 
     [Fact]
+    public void Round_trips_accent_color()
+    {
+        var vm = new SettingsViewModel(new AppSettings { AccentColor = "#2E7D32" });
+
+        Assert.Equal("#2E7D32", vm.ToSettings().AccentColor);
+
+        vm.SetAccentCommand.Execute("#C62828");
+        Assert.Equal("#C62828", vm.ToSettings().AccentColor);
+    }
+
+    [Fact]
     public void Round_trips_tls_options()
     {
         var vm = new SettingsViewModel(new AppSettings

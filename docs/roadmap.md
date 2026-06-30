@@ -24,8 +24,9 @@ later items slot in additively rather than forcing rewrites.
   persisted (`SettingsStore`) and applied at startup (`AppearanceService`)
 - [done] Settings: TLS options — allow-invalid-server-cert toggle + client certificate
   (mutual TLS), wired into the sender via `TlsHandlerFactory`; applied at startup
-- [MVP] File: save-as, recent items; tree add/rename/delete; drag-reorder
-- [MVP] Settings: accent **colors** (theme-resource overrides)
+- [done] Settings: accent **color** (hex + preset swatches; drives Fluent accent shades)
+- [done] Remembers the last opened collection and reopens it on startup
+- [later] File: save-as, recent-items list; drag-reorder
 - [v2] Folder-level inherited settings (base URL, shared auth/headers)
 - [later] Collection-level scripting hooks
 

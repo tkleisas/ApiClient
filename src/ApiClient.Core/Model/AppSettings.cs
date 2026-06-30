@@ -31,6 +31,15 @@ public record AppSettings
     /// <summary>The base UI font size in points. Defaults to 12 (a compact, dense layout).</summary>
     public double FontSize { get; init; } = 12;
 
+    /// <summary>Accent color as a hex string (e.g. <c>#0078D4</c>); empty uses the system/theme default.</summary>
+    public string AccentColor { get; init; } = string.Empty;
+
+    /// <summary>The last collection folder opened, reopened on startup; empty if none.</summary>
+    public string LastCollectionDirectory { get; init; } = string.Empty;
+
+    /// <summary>Whether <see cref="LastCollectionDirectory"/> was opened as a Bruno collection.</summary>
+    public bool LastCollectionIsBruno { get; init; }
+
     /// <summary>When true, server certificate validation errors are ignored (e.g. self-signed certs in dev).</summary>
     public bool AllowInvalidServerCertificates { get; init; }
 

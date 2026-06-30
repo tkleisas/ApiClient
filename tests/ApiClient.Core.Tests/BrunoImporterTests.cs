@@ -197,6 +197,52 @@ public class BrunoImporterTests
     }
 
     [Fact]
+    public void Inherit_auth_uses_the_collection_level_auth()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "BrunoImportTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            File.WriteAllText(Path.Combine(root, "collection.bru"),
+                "auth {\n  mode: bearer\n}\nauth:bearer {\n  token: COL-TOKEN\n}");
+            File.WriteAllText(Path.Combine(root, "req.bru"),
+                "meta {\n  name: R\n}\nget {\n  url: https://h\n  auth: inherit\n}");
+
+            var collection = BrunoImporter.ImportCollection(root);
+
+            var request = collection.Requests.Single(r => r.Name == "R");
+            Assert.Equal(AuthType.Bearer, request.Auth.Type);
+            Assert.Equal("COL-TOKEN", request.Auth.Token);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Explicit_none_auth_is_not_replaced_by_inheritance()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "BrunoImportTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            File.WriteAllText(Path.Combine(root, "collection.bru"),
+                "auth {\n  mode: bearer\n}\nauth:bearer {\n  token: COL-TOKEN\n}");
+            File.WriteAllText(Path.Combine(root, "open.bru"),
+                "meta {\n  name: Open\n}\nget {\n  url: https://h\n  auth: none\n}");
+
+            var collection = BrunoImporter.ImportCollection(root);
+
+            Assert.Equal(AuthType.None, collection.Requests.Single(r => r.Name == "Open").Auth.Type);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
     public void Import_collection_prunes_folders_with_no_requests()
     {
         var root = Path.Combine(Path.GetTempPath(), "BrunoImportTests", Guid.NewGuid().ToString("N"));

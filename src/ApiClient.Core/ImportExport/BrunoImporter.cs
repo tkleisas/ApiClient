@@ -49,14 +49,19 @@ public static class BrunoImporter
     /// <summary>
     /// Imports a Bruno collection directory: every <c>.bru</c> request file becomes an
     /// <see cref="ApiRequest"/>, sub-directories become folders. Files that are not requests
-    /// (e.g. environment or folder-settings files) are skipped.
+    /// (e.g. environment or folder-settings files) are skipped. Requests with
+    /// <c>auth: inherit</c> take the auth defined by the nearest <c>collection.bru</c>/<c>folder.bru</c>.
     /// </summary>
-    public static Collection ImportCollection(string directory) => new Collection
+    public static Collection ImportCollection(string directory)
     {
-        Name = new DirectoryInfo(directory).Name,
-        Requests = LoadRequests(directory),
-        Folders = LoadFolders(directory),
-    };
+        var inheritedAuth = SettingsAuth(Path.Combine(directory, "collection.bru"), new RequestAuth());
+        return new Collection
+        {
+            Name = new DirectoryInfo(directory).Name,
+            Requests = LoadRequests(directory, inheritedAuth),
+            Folders = LoadFolders(directory, inheritedAuth),
+        };
+    }
 
     /// <summary>
     /// Imports Bruno environments from the collection's <c>environments/</c> folder. Each
@@ -78,7 +83,7 @@ public static class BrunoImporter
             .ToList();
     }
 
-    private static IReadOnlyList<ApiRequest> LoadRequests(string directory)
+    private static IReadOnlyList<ApiRequest> LoadRequests(string directory, RequestAuth inheritedAuth)
     {
         var requests = new List<ApiRequest>();
         foreach (var file in Directory.EnumerateFiles(directory, "*.bru").OrderBy(p => p, StringComparer.Ordinal))
@@ -90,7 +95,11 @@ public static class BrunoImporter
 
             try
             {
-                requests.Add(ParseRequest(File.ReadAllText(file)));
+                var text = File.ReadAllText(file);
+                var request = ParseRequest(text);
+                if (string.Equals(MethodAuthMode(text), "inherit", StringComparison.OrdinalIgnoreCase))
+                    request = request with { Auth = inheritedAuth };
+                requests.Add(request);
             }
             catch (FormatException)
             {
@@ -101,18 +110,48 @@ public static class BrunoImporter
         return requests;
     }
 
-    private static IReadOnlyList<CollectionFolder> LoadFolders(string directory)
+    private static IReadOnlyList<CollectionFolder> LoadFolders(string directory, RequestAuth inheritedAuth)
         => Directory.EnumerateDirectories(directory)
             .OrderBy(p => p, StringComparer.Ordinal)
-            .Select(path => new CollectionFolder
+            .Select(path =>
             {
-                Name = new DirectoryInfo(path).Name,
-                Requests = LoadRequests(path),
-                Folders = LoadFolders(path),
+                var folderAuth = SettingsAuth(Path.Combine(path, "folder.bru"), inheritedAuth);
+                return new CollectionFolder
+                {
+                    Name = new DirectoryInfo(path).Name,
+                    Requests = LoadRequests(path, folderAuth),
+                    Folders = LoadFolders(path, folderAuth),
+                };
             })
             // Drop folders that contain no requests (e.g. Bruno's environments folder).
             .Where(folder => folder.Requests.Count > 0 || folder.Folders.Count > 0)
             .ToList();
+
+    /// <summary>The auth mode declared in a request's method block (e.g. "bearer", "inherit", "none").</summary>
+    private static string MethodAuthMode(string bru)
+    {
+        var blocks = ScanBlocks(bru);
+        var methodBlock = blocks.FirstOrDefault(b => Methods.Contains(b.Name));
+        return methodBlock.Name is null
+            ? "none"
+            : ParseDictionary(methodBlock.Inner).GetValueOrDefault("auth", "none");
+    }
+
+    /// <summary>Reads the inherited auth defined by a collection.bru/folder.bru settings file, falling back to <paramref name="fallback"/>.</summary>
+    private static RequestAuth SettingsAuth(string settingsFile, RequestAuth fallback)
+    {
+        if (!File.Exists(settingsFile))
+            return fallback;
+
+        var blocks = ScanBlocks(File.ReadAllText(settingsFile));
+        var mode = ParseDictionary(FindBlock(blocks, "auth")).GetValueOrDefault("mode", "inherit");
+        return mode.ToLowerInvariant() switch
+        {
+            "inherit" => fallback,
+            "none" => new RequestAuth(),
+            _ => BuildAuth(mode, blocks),
+        };
+    }
 
     private static RequestBody BuildBody(string mode, List<(string Name, string Inner)> blocks) => mode switch
     {

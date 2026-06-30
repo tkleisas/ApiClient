@@ -1,0 +1,14 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ApiClient.UI.Views.TextPromptWindow"
+        Width="360" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="14" Spacing="8">
+        <TextBlock x:Name="PromptText"/>
+        <TextBox x:Name="Input"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Content="Cancel" MinWidth="72" Click="OnCancel"/>
+            <Button Content="OK" MinWidth="72" IsDefault="True" Click="OnOk"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

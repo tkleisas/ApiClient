@@ -170,6 +170,45 @@ public class CollectionStoreTests
     }
 
     [Fact]
+    public void Delete_request_removes_the_file()
+    {
+        using var dir = new TempDir();
+        Store().SaveRequest(new ApiRequest { Name = "Ping", Url = "https://h/p" }, dir.Path);
+        Assert.True(Store().RequestExists("Ping", dir.Path));
+
+        Store().DeleteRequest("Ping", dir.Path);
+
+        Assert.False(Store().RequestExists("Ping", dir.Path));
+    }
+
+    [Fact]
+    public void Create_and_delete_folder()
+    {
+        using var dir = new TempDir();
+
+        var created = Store().CreateFolder(dir.Path, "Users");
+        Assert.True(Directory.Exists(created));
+
+        Store().DeleteFolder(created);
+        Assert.False(Directory.Exists(created));
+    }
+
+    [Fact]
+    public void Rename_folder_moves_the_directory_and_its_contents()
+    {
+        using var dir = new TempDir();
+        var users = Store().CreateFolder(dir.Path, "Users");
+        Store().SaveRequest(new ApiRequest { Name = "Get", Url = "https://h/u" }, users);
+
+        var renamed = Store().RenameFolder(users, "People");
+
+        Assert.False(Directory.Exists(users));
+        Assert.True(Directory.Exists(renamed));
+        Assert.Equal("People", new DirectoryInfo(renamed).Name);
+        Assert.True(Store().RequestExists("Get", renamed));
+    }
+
+    [Fact]
     public void Load_ignores_files_that_are_not_request_files()
     {
         using var dir = new TempDir();

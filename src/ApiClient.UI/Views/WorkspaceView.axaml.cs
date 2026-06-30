@@ -103,4 +103,51 @@ public partial class WorkspaceView : UserControl
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.Shutdown();
     }
+
+    private static CollectionNodeViewModel? NodeFrom(object? sender)
+        => (sender as Control)?.DataContext as CollectionNodeViewModel;
+
+    private void OnNewRequest(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is WorkspaceViewModel workspace)
+            workspace.AddRequest(NodeFrom(sender));
+    }
+
+    private void OnNewFolder(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is WorkspaceViewModel workspace)
+            workspace.AddFolder(NodeFrom(sender));
+    }
+
+    private async void OnRenameNode(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not WorkspaceViewModel workspace || NodeFrom(sender) is not { } node)
+            return;
+
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        var dialog = new TextPromptWindow("Rename", "New name:", node.Title);
+        if (owner is not null)
+            await dialog.ShowDialog(owner);
+        else
+            dialog.Show();
+
+        if (dialog.Confirmed && !string.IsNullOrWhiteSpace(dialog.Value))
+            workspace.RenameNode(node, dialog.Value.Trim());
+    }
+
+    private async void OnDeleteNode(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not WorkspaceViewModel workspace || NodeFrom(sender) is not { } node)
+            return;
+
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        var dialog = new ConfirmWindow("Delete", $"Delete '{node.Title}'? This cannot be undone.");
+        if (owner is not null)
+            await dialog.ShowDialog(owner);
+        else
+            dialog.Show();
+
+        if (dialog.Confirmed)
+            workspace.DeleteNode(node);
+    }
 }

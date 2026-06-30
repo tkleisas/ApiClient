@@ -13,7 +13,8 @@ later items slot in additively rather than forcing rewrites.
   request tree, `collection.json` manifest, `*.req.json` files, round-trips on disk
 - [done] Collection explorer in the UI: open a folder, browse the nested tree, click a
   request to load it into the editor (`WorkspaceView`/`WorkspaceViewModel`)
-- [MVP] Save edits back to disk; rename/add/delete; drag-reorder *(part of the shell step below)*
+- [done] Save edits back to disk; right-click tree to add request/folder, rename, delete
+- [later] Drag-reorder
 
 ## App shell, settings & About
 - [done] Top menu (File: Open Collection, Save Request + Ctrl+S, Exit; Help: About)

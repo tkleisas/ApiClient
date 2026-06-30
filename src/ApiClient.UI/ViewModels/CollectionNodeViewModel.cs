@@ -32,8 +32,8 @@ public sealed class CollectionNodeViewModel
     /// <summary>Child nodes (folders/requests). Empty for request nodes.</summary>
     public ObservableCollection<CollectionNodeViewModel> Children { get; } = [];
 
-    /// <summary>Creates a folder node.</summary>
-    public static CollectionNodeViewModel Folder(string title) => new(title, isRequest: false, request: null, directory: null);
+    /// <summary>Creates a folder node located at <paramref name="directory"/>.</summary>
+    public static CollectionNodeViewModel Folder(string title, string? directory) => new(title, isRequest: false, request: null, directory);
 
     /// <summary>Creates a request node from <paramref name="request"/>, located in <paramref name="directory"/>.</summary>
     public static CollectionNodeViewModel ForRequest(ApiRequest request, string directory)

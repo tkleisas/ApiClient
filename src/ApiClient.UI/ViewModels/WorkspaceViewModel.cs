@@ -150,7 +150,7 @@ public partial class WorkspaceViewModel : ViewModelBase
 
     private static CollectionNodeViewModel BuildRoot(Collection collection, string directory)
     {
-        var root = CollectionNodeViewModel.Folder(collection.Name);
+        var root = CollectionNodeViewModel.Folder(collection.Name, directory);
         AddChildren(root, collection.Folders, collection.Requests, directory);
         return root;
     }
@@ -166,9 +166,79 @@ public partial class WorkspaceViewModel : ViewModelBase
 
         foreach (var folder in folders)
         {
-            var folderNode = CollectionNodeViewModel.Folder(folder.Name);
-            AddChildren(folderNode, folder.Folders, folder.Requests, Path.Combine(directory, folder.Name));
+            var folderPath = Path.Combine(directory, folder.Name);
+            var folderNode = CollectionNodeViewModel.Folder(folder.Name, folderPath);
+            AddChildren(folderNode, folder.Folders, folder.Requests, folderPath);
             node.Children.Add(folderNode);
         }
+    }
+
+    /// <summary>Creates a new request in the target node's folder (or the collection root) and reloads.</summary>
+    public void AddRequest(CollectionNodeViewModel? target)
+    {
+        var directory = target?.Directory ?? CollectionDirectory;
+        if (directory is null)
+            return;
+
+        var name = "New Request";
+        for (var n = 2; _store.RequestExists(name, directory); n++)
+            name = $"New Request {n}";
+
+        _store.SaveRequest(new ApiRequest { Name = name, Url = "https://" }, directory);
+        Reload();
+    }
+
+    /// <summary>Creates a new sub-folder in the target node's folder (or the collection root) and reloads.</summary>
+    public void AddFolder(CollectionNodeViewModel? target)
+    {
+        var directory = target?.Directory ?? CollectionDirectory;
+        if (directory is null)
+            return;
+
+        var name = "New Folder";
+        for (var n = 2; Directory.Exists(Path.Combine(directory, name)); n++)
+            name = $"New Folder {n}";
+
+        _store.CreateFolder(directory, name);
+        Reload();
+    }
+
+    /// <summary>Renames a request or folder node on disk and reloads.</summary>
+    public void RenameNode(CollectionNodeViewModel node, string newName)
+    {
+        if (CollectionDirectory is null || node.Directory is null || string.IsNullOrWhiteSpace(newName))
+            return;
+
+        if (node is { IsRequest: true, Request: { } request })
+        {
+            _store.DeleteRequest(request.Name, node.Directory);
+            _store.SaveRequest(request with { Name = newName }, node.Directory);
+        }
+        else
+        {
+            _store.RenameFolder(node.Directory, newName);
+        }
+
+        Reload();
+    }
+
+    /// <summary>Deletes a request or folder node from disk and reloads.</summary>
+    public void DeleteNode(CollectionNodeViewModel node)
+    {
+        if (CollectionDirectory is null || node.Directory is null)
+            return;
+
+        if (node is { IsRequest: true, Request: { } request })
+            _store.DeleteRequest(request.Name, node.Directory);
+        else
+            _store.DeleteFolder(node.Directory);
+
+        Reload();
+    }
+
+    private void Reload()
+    {
+        if (CollectionDirectory is not null)
+            LoadCollection(CollectionDirectory);
     }
 }

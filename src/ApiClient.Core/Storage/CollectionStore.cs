@@ -77,6 +77,43 @@ public sealed class CollectionStore
         File.WriteAllText(Path.Combine(directory, FileNameFor(request)), _serializer.Serialize(request));
     }
 
+    /// <summary>Whether a request file for <paramref name="name"/> exists in <paramref name="directory"/>.</summary>
+    public bool RequestExists(string name, string directory)
+        => File.Exists(Path.Combine(directory, FileNameForName(name)));
+
+    /// <summary>Deletes the request file named <paramref name="name"/> in <paramref name="directory"/>, if present.</summary>
+    public void DeleteRequest(string name, string directory)
+    {
+        var path = Path.Combine(directory, FileNameForName(name));
+        if (File.Exists(path))
+            File.Delete(path);
+    }
+
+    /// <summary>Creates a sub-folder named <paramref name="name"/> under <paramref name="parentDirectory"/> and returns its path.</summary>
+    public string CreateFolder(string parentDirectory, string name)
+    {
+        var path = Path.Combine(parentDirectory, SanitizeFileName(name));
+        Directory.CreateDirectory(path);
+        return path;
+    }
+
+    /// <summary>Recursively deletes the folder at <paramref name="directory"/>, if present.</summary>
+    public void DeleteFolder(string directory)
+    {
+        if (Directory.Exists(directory))
+            Directory.Delete(directory, recursive: true);
+    }
+
+    /// <summary>Renames the folder at <paramref name="directory"/> to <paramref name="newName"/> and returns the new path.</summary>
+    public string RenameFolder(string directory, string newName)
+    {
+        var parent = Path.GetDirectoryName(directory) ?? directory;
+        var target = Path.Combine(parent, SanitizeFileName(newName));
+        if (!string.Equals(directory, target, System.StringComparison.Ordinal))
+            Directory.Move(directory, target);
+        return target;
+    }
+
     private void SaveContents(IReadOnlyList<ApiRequest> requests, IReadOnlyList<CollectionFolder> folders, string directory)
     {
         foreach (var request in requests)
@@ -107,10 +144,13 @@ public sealed class CollectionStore
             })
             .ToList();
 
-    private static string FileNameFor(ApiRequest request)
+    private static string FileNameFor(ApiRequest request) => FileNameForName(request.Name);
+
+    private static string FileNameForName(string name) => SanitizeFileName(name) + RequestFileSuffix;
+
+    private static string SanitizeFileName(string name)
     {
         var invalid = Path.GetInvalidFileNameChars();
-        var safe = new string(request.Name.Select(c => invalid.Contains(c) ? '_' : c).ToArray());
-        return safe + RequestFileSuffix;
+        return new string(name.Select(c => invalid.Contains(c) ? '_' : c).ToArray());
     }
 }

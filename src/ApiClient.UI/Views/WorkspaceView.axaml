@@ -59,7 +59,17 @@
                       SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}" x:DataType="vm:CollectionNodeViewModel">
-                        <TextBlock Text="{Binding Title}" Padding="0,0"/>
+                        <TextBlock Text="{Binding Title}" Padding="0,0">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="New Request" Click="OnNewRequest"/>
+                                    <MenuItem Header="New Folder" Click="OnNewFolder"/>
+                                    <Separator/>
+                                    <MenuItem Header="Rename…" Click="OnRenameNode"/>
+                                    <MenuItem Header="Delete…" Click="OnDeleteNode"/>
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
                     </TreeDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>

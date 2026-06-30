@@ -27,6 +27,9 @@ These are commitments, not marketing. They drive real design decisions:
 - **Code generation** for both **client** and **server** scenarios, C#-first
   (HttpClient, Refit, RestSharp; response JSON → C# records; server contracts).
 
+- **Pre/post-request scripting** in JavaScript (Jint), with `req`/`res`/`bru`/`crypto`
+  and `test`/`expect` — chain values between requests, sign payloads, assert responses.
+
 ## Architecture
 
 - `src/ApiClient.Core` — UI-free domain logic: HTTP engine, collection storage,

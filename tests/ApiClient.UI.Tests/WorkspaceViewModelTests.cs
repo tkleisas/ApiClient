@@ -23,6 +23,12 @@ public class WorkspaceViewModelTests
         }
     }
 
+    private static WorkspaceViewModel NewWorkspace() => new WorkspaceViewModel(
+        new RequestEditorViewModel(),
+        new CollectionStore(),
+        new SettingsStore(System.IO.Path.Combine(
+            System.IO.Path.GetTempPath(), "ApiClientUITests", Guid.NewGuid().ToString("N") + ".json")));
+
     private static Collection SampleCollection() => new Collection
     {
         Name = "API",
@@ -42,7 +48,7 @@ public class WorkspaceViewModelTests
     {
         using var dir = new TempDir();
         new CollectionStore().Save(SampleCollection(), dir.Path);
-        var ws = new WorkspaceViewModel();
+        var ws = NewWorkspace();
 
         ws.LoadCollection(dir.Path);
 
@@ -63,7 +69,7 @@ public class WorkspaceViewModelTests
     {
         using var dir = new TempDir();
         new CollectionStore().Save(SampleCollection(), dir.Path);
-        var ws = new WorkspaceViewModel();
+        var ws = NewWorkspace();
         ws.LoadCollection(dir.Path);
 
         var getUser = ws.Nodes.Single().Children
@@ -80,7 +86,7 @@ public class WorkspaceViewModelTests
     {
         using var dir = new TempDir();
         new CollectionStore().Save(SampleCollection(), dir.Path);
-        var ws = new WorkspaceViewModel();
+        var ws = NewWorkspace();
         ws.LoadCollection(dir.Path);
 
         var getUser = ws.Nodes.Single().Children
@@ -101,7 +107,7 @@ public class WorkspaceViewModelTests
     {
         using var dir = new TempDir();
         new CollectionStore().Save(SampleCollection(), dir.Path);
-        var ws = new WorkspaceViewModel();
+        var ws = NewWorkspace();
         ws.LoadCollection(dir.Path);
         var originalUrl = ws.Editor.Url;
 

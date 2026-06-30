@@ -9,6 +9,7 @@ using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
 using ApiClient.Core.Json;
 using ApiClient.Core.Model;
+using ApiClient.Core.Scripting;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -40,6 +41,10 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     private readonly RequestExecutor _executor;
     private readonly IHostServices _host;
+    private readonly ScriptEngine _scriptEngine = new ScriptEngine();
+
+    // Variables set by scripts (bru.setVar) — persist across requests for chaining.
+    private readonly Dictionary<string, string> _extracted = new Dictionary<string, string>();
 
     /// <summary>Design-time / default constructor: wires the real HTTP engine and standalone host services.</summary>
     public RequestEditorViewModel()
@@ -152,6 +157,18 @@ public partial class RequestEditorViewModel : ViewModelBase
     private string _generatedCode = string.Empty;
 
     [ObservableProperty]
+    private string _preRequestScript = string.Empty;
+
+    [ObservableProperty]
+    private string _postResponseScript = string.Empty;
+
+    [ObservableProperty]
+    private string _scriptError = string.Empty;
+
+    /// <summary>Results of post/pre-response <c>test(...)</c> assertions from the last send.</summary>
+    public ObservableCollection<TestResult> TestResults { get; } = [];
+
+    [ObservableProperty]
     private AuthType _selectedAuthType;
 
     [ObservableProperty]
@@ -209,15 +226,31 @@ public partial class RequestEditorViewModel : ViewModelBase
         IsSending = true;
         ResponseSummary = "Sending…";
         ResponseHeaders = string.Empty;
+        ScriptError = string.Empty;
+        TestResults.Clear();
         ShowResponseBody(string.Empty);
 
         try
         {
-            var response = await _executor.ExecuteAsync(BuildRequest(), Variables);
+            var request = BuildRequest();
+
+            // Effective variables: environment overlaid with script-extracted runtime values.
+            var variables = new Dictionary<string, string>(Variables);
+            foreach (var (key, value) in _extracted)
+                variables[key] = value;
+
+            request = RunPreRequest(request, variables);
+
+            var response = await _executor.ExecuteAsync(request, variables);
+
             ResponseSummary =
                 $"{response.StatusCode} {response.ReasonPhrase} · {response.Elapsed.TotalMilliseconds:F0} ms · {FormatSize(response.SizeBytes)}";
             ResponseHeaders = string.Join(Environment.NewLine, response.Headers.Select(h => $"{h.Name}: {h.Value}"));
             ShowResponseBody(response.Body);
+
+            RunPostResponse(request, response, variables);
+            PersistRuntimeVariables(variables);
+
             _host.ReportStatus(ResponseSummary);
         }
         catch (Exception ex)
@@ -229,6 +262,62 @@ public partial class RequestEditorViewModel : ViewModelBase
         finally
         {
             IsSending = false;
+        }
+    }
+
+    private ApiRequest RunPreRequest(ApiRequest request, IDictionary<string, string> variables)
+    {
+        if (string.IsNullOrWhiteSpace(request.Script.PreRequest))
+            return request;
+
+        var headers = new Dictionary<string, string>();
+        foreach (var header in request.Headers)
+            headers[header.Name] = header.Value;
+
+        var bodyText = request.Body.Type == BodyType.Raw ? request.Body.Text ?? string.Empty : string.Empty;
+        var scriptRequest = new ScriptRequest(request.Url, request.Method, bodyText, headers);
+
+        ReportScript(_scriptEngine.RunPreRequest(request.Script.PreRequest, scriptRequest, variables));
+
+        return request with
+        {
+            Url = scriptRequest.url,
+            Method = scriptRequest.method,
+            Headers = headers.Select(h => new KeyValueItem(h.Key, h.Value)).ToList(),
+            Body = request.Body.Type == BodyType.Raw ? request.Body with { Text = scriptRequest.body } : request.Body,
+        };
+    }
+
+    private void RunPostResponse(ApiRequest request, ApiResponse response, IDictionary<string, string> variables)
+    {
+        if (string.IsNullOrWhiteSpace(request.Script.PostResponse))
+            return;
+
+        var responseHeaders = new Dictionary<string, string>();
+        foreach (var header in response.Headers)
+            responseHeaders[header.Name] = header.Value;
+
+        var scriptRequest = new ScriptRequest(request.Url, request.Method, string.Empty, new Dictionary<string, string>());
+        var scriptResponse = new ScriptResponse(response.StatusCode, response.Body, responseHeaders);
+
+        ReportScript(_scriptEngine.RunPostResponse(request.Script.PostResponse, scriptRequest, scriptResponse, variables));
+    }
+
+    private void ReportScript(ScriptResult result)
+    {
+        foreach (var test in result.Tests)
+            TestResults.Add(test);
+
+        if (result.Error is not null)
+            ScriptError = string.IsNullOrEmpty(ScriptError) ? result.Error : $"{ScriptError}\n{result.Error}";
+    }
+
+    private void PersistRuntimeVariables(IReadOnlyDictionary<string, string> variables)
+    {
+        foreach (var (key, value) in variables)
+        {
+            if (!Variables.TryGetValue(key, out var envValue) || envValue != value)
+                _extracted[key] = value;
         }
     }
 
@@ -276,6 +365,11 @@ public partial class RequestEditorViewModel : ViewModelBase
         Headers.Clear();
         foreach (var header in request.Headers)
             Headers.Add(new HeaderRowViewModel { Enabled = header.Enabled, Name = header.Name, Value = header.Value });
+
+        PreRequestScript = request.Script.PreRequest;
+        PostResponseScript = request.Script.PostResponse;
+        ScriptError = string.Empty;
+        TestResults.Clear();
 
         SelectedAuthType = request.Auth.Type;
         AuthToken = request.Auth.Token ?? string.Empty;
@@ -328,6 +422,11 @@ public partial class RequestEditorViewModel : ViewModelBase
                 ApiKeyName = AuthKeyName,
                 ApiKeyValue = AuthKeyValue,
                 ApiKeyLocation = AuthKeyLocation,
+            },
+            Script = new RequestScript
+            {
+                PreRequest = PreRequestScript,
+                PostResponse = PostResponseScript,
             },
         };
     }

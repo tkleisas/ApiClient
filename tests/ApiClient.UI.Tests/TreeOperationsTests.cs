@@ -27,7 +27,8 @@ public class TreeOperationsTests
     {
         var store = new CollectionStore();
         store.Save(new Collection { Name = "C", Requests = [new ApiRequest { Name = "Ping", Url = "https://h/p" }] }, dir);
-        var ws = new WorkspaceViewModel(new RequestEditorViewModel(), store, new SettingsStore());
+        var ws = new WorkspaceViewModel(new RequestEditorViewModel(), store,
+            new SettingsStore(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ApiClientTreeTests", Guid.NewGuid().ToString("N") + ".json")));
         ws.LoadCollection(dir);
         return (ws, store);
     }

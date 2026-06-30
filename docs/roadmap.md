@@ -74,9 +74,11 @@ later items slot in additively rather than forcing rewrites.
 - [v2] Import from curl; import from Postman / OpenAPI (adoption lever)
 
 ## Scripting & tests
-- [later] Pre-request / post-response scripts + assertions.
-  Open decision: scripting engine — **Jint** (JS, Postman-script compatible) vs
-  **Roslyn** C# scripting (native feel). Deferred, but the pipeline keeps hook points.
+- [done] Pre/post-request **JavaScript** via Jint, with a Bruno-flavoured API (`req`,
+  `res`, `bru.setVar/getVar` for chaining, `crypto` for signing, `test`/`expect`);
+  Scripts tab + Tests results tab in the editor
+- [done] Dynamic variables (`{{$guid}}`, `{{$timestamp}}`, `{{$isoTimestamp}}`, `{{$randomInt}}`)
+- [later] Import Bruno's JS scripts on collection import
 
 ## Protocols & power features
 - [later] GraphQL helper, WebSocket, Server-Sent Events, gRPC

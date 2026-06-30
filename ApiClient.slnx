@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/external/" />
+  <Folder Name="/external/AvaloniaVirtualDataGrid/" />
+  <Folder Name="/external/AvaloniaVirtualDataGrid/src/">
+    <Project Path="external/AvaloniaVirtualDataGrid/src/AvaloniaVirtualDataGrid/AvaloniaVirtualDataGrid.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/ApiClient.App/ApiClient.App.csproj" />
     <Project Path="src/ApiClient.Core/ApiClient.Core.csproj" />

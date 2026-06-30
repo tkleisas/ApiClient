@@ -7,6 +7,7 @@ using ApiClient.Core.Http;
 using ApiClient.Core.ImportExport;
 using ApiClient.Core.Model;
 using ApiClient.Core.Storage;
+using AvaloniaVirtualDataGrid.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -22,6 +23,7 @@ public partial class WorkspaceViewModel : ViewModelBase
     private readonly SettingsStore _settingsStore;
     private readonly ReconfigurableHttpSender? _sender;
     private readonly EnvironmentStore _environmentStore = new();
+    private readonly HistoryStore _historyStore = new();
 
     /// <summary>Default constructor: builds the editor with a TLS-configured HTTP client from saved settings.</summary>
     public WorkspaceViewModel()
@@ -38,7 +40,13 @@ public partial class WorkspaceViewModel : ViewModelBase
 
         _sender = new ReconfigurableHttpSender(new HttpClientSender(TlsHandlerFactory.CreateClient(Settings.ToTlsOptions())));
         var executor = new RequestExecutor(HttpRequestFactory.CreateDefault(), _sender);
-        Editor = new RequestEditorViewModel(executor, new StandaloneHostServices());
+        Editor = new RequestEditorViewModel(executor, new StandaloneHostServices())
+        {
+            RequestRecorded = RecordHistory,
+        };
+
+        foreach (var entry in _historyStore.Load())
+            History.Add(entry);
     }
 
     /// <summary>Creates the workspace with an explicit editor and stores (used for testing).</summary>
@@ -85,6 +93,25 @@ public partial class WorkspaceViewModel : ViewModelBase
 
     /// <summary>The collection's environments (e.g. Local / UAT / Prod).</summary>
     public ObservableCollection<ApiEnvironment> Environments { get; } = [];
+
+    /// <summary>Request send history, newest first (backed by the virtualized data grid).</summary>
+    public InMemoryDataProvider<HistoryEntry> History { get; } = new InMemoryDataProvider<HistoryEntry>();
+
+    [ObservableProperty]
+    private bool _showHistory;
+
+    private void RecordHistory(HistoryEntry entry)
+    {
+        _historyStore.Append(entry);
+        History.Insert(0, entry);
+    }
+
+    /// <summary>Loads a history entry's method and URL back into the editor.</summary>
+    public void ReplayHistory(HistoryEntry entry)
+    {
+        Editor.Method = entry.Method;
+        Editor.Url = entry.Url;
+    }
 
     [ObservableProperty]
     private CollectionNodeViewModel? _selectedNode;

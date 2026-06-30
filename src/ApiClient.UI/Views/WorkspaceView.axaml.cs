@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using ApiClient.Core.Model;
 using ApiClient.UI;
 using ApiClient.UI.ViewModels;
 using Avalonia;
@@ -7,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using AvaloniaVirtualDataGrid.Columns;
 
 namespace ApiClient.UI.Views;
 
@@ -21,6 +23,20 @@ public partial class WorkspaceView : UserControl
     public WorkspaceView()
     {
         InitializeComponent();
+
+        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Time", e => e.Timestamp.ToLocalTime().ToString("HH:mm:ss")));
+        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Method", e => e.Method));
+        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Status", e => e.Status));
+        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("ms", e => e.ElapsedMs));
+        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Size", e => e.SizeBytes));
+        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("URL", e => e.Url));
+        HistoryGrid.RowDoubleClick += OnHistoryRowDoubleClick;
+    }
+
+    private void OnHistoryRowDoubleClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is WorkspaceViewModel workspace && HistoryGrid.SelectedItem is HistoryEntry entry)
+            workspace.ReplayHistory(entry);
     }
 
     private async void OnOpenCollection(object? sender, RoutedEventArgs e)

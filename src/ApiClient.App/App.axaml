@@ -13,6 +13,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://AvaloniaVirtualDataGrid/Themes/Generic.axaml" />
 
         <!-- Compact / dense layout: smaller control heights, tighter padding, smaller tab/menu text. -->
         <Style Selector="TextBox">

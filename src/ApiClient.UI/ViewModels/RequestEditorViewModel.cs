@@ -10,6 +10,7 @@ using ApiClient.Core.Http;
 using ApiClient.Core.Json;
 using ApiClient.Core.Model;
 using ApiClient.Core.Scripting;
+using ApiClient.Core.Variables;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -68,6 +69,9 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     /// <summary>Variables (from the active environment) used to resolve <c>{{tokens}}</c> when sending.</summary>
     public IReadOnlyDictionary<string, string> Variables { get; set; } = NoVariables;
+
+    /// <summary>Invoked after each successful send so a host can record it to history.</summary>
+    public Action<HistoryEntry>? RequestRecorded { get; set; }
 
     /// <summary>The HTTP methods offered in the method drop-down.</summary>
     public string[] Methods { get; } = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
@@ -250,6 +254,16 @@ public partial class RequestEditorViewModel : ViewModelBase
 
             RunPostResponse(request, response, variables);
             PersistRuntimeVariables(variables);
+
+            RequestRecorded?.Invoke(new HistoryEntry
+            {
+                Timestamp = DateTimeOffset.Now,
+                Method = request.Method,
+                Url = new VariableResolver().Resolve(request.Url, variables),
+                Status = response.StatusCode,
+                ElapsedMs = (long)response.Elapsed.TotalMilliseconds,
+                SizeBytes = response.SizeBytes,
+            });
 
             _host.ReportStatus(ResponseSummary);
         }

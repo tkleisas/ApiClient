@@ -11,6 +11,17 @@ Verify:
 dotnet --version   # 10.x
 ```
 
+## Submodules
+
+The request-history grid uses [AvaloniaVirtualDataGrid](https://github.com/tkleisas/AvaloniaVirtualDataGrid)
+as a git submodule under `external/`. Clone with submodules (or initialize them after):
+
+```bash
+git clone --recurse-submodules <repo>
+# or, in an existing clone:
+git submodule update --init --recursive
+```
+
 ## Common commands
 
 Run from the repository root:

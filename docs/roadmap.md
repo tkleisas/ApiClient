@@ -68,8 +68,10 @@ later items slot in additively rather than forcing rewrites.
 - [later] curl / Python / JS / TS generators
 
 ## History & sharing
-- [MVP] Per-request send history; sharing = the files themselves
-- [v2] Global, searchable history (virtualized grid); one-click export bundle
+- [done] Global send history in a **virtualized data grid** (AvaloniaVirtualDataGrid),
+  persisted as JSONL; View > History toggles it; double-click an entry to reload it
+- [MVP] sharing = the files themselves
+- [v2] Searchable/filterable history; one-click export bundle
 - [done] Import Bruno (`.bru`) collections (`BrunoImporter`: parse request + walk folder)
 - [v2] Import from curl; import from Postman / OpenAPI (adoption lever)
 

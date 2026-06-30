@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApiClient.Core\ApiClient.Core.csproj" />
+    <ProjectReference Include="..\..\external\AvaloniaVirtualDataGrid\src\AvaloniaVirtualDataGrid\AvaloniaVirtualDataGrid.csproj" />
   </ItemGroup>
 
   <ItemGroup>

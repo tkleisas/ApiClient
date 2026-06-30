@@ -24,14 +24,18 @@ public partial class WorkspaceView : UserControl
     {
         InitializeComponent();
 
-        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Time", e => e.Timestamp.ToLocalTime().ToString("HH:mm:ss")));
-        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Method", e => e.Method));
-        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Status", e => e.Status));
-        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("ms", e => e.ElapsedMs));
-        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("Size", e => e.SizeBytes));
-        HistoryGrid.Columns.Add(VirtualDataGridTextColumn.Create<HistoryEntry>("URL", e => e.Url));
+        HistoryGrid.Columns.Add(Column("Time", e => e.Timestamp.ToLocalTime().ToString("HH:mm:ss")));
+        HistoryGrid.Columns.Add(Column("Method", e => e.Method));
+        HistoryGrid.Columns.Add(Column("Status", e => e.Status));
+        HistoryGrid.Columns.Add(Column("ms", e => e.ElapsedMs));
+        HistoryGrid.Columns.Add(Column("Size", e => e.SizeBytes));
+        HistoryGrid.Columns.Add(Column("URL", e => e.Url));
         HistoryGrid.RowDoubleClick += OnHistoryRowDoubleClick;
     }
+
+    // Read-only column (getter only) so history rows can't be edited.
+    private static VirtualDataGridTextColumn Column(string header, System.Func<HistoryEntry, object?> getter)
+        => new VirtualDataGridTextColumn(header, o => o is HistoryEntry entry ? getter(entry) : null);
 
     private void OnHistoryRowDoubleClick(object? sender, RoutedEventArgs e)
     {

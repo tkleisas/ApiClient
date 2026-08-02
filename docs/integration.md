@@ -56,10 +56,34 @@ public interface IHostServices
 - **Embedded** receives nvs's implementation, so collections sit inside the open
   workspace and can reuse nvs's git integration, and status flows to the IDE.
 
-## Avalonia version decision (resolved)
+## LLM integration seam
 
-We are **staying on Avalonia 12** for now. The structural prep above (UI extracted,
-`IHostServices` seam) is done, so we are embedding-ready — but actual in-process embedding
-into nvs requires matching Avalonia versions. The plan is to wire up `ApiClient.Nvs` once
-nvs moves to Avalonia 12 (or, if needed sooner, ship a UI build pinned to nvs's version).
-Until then, `ApiClient.Core` can already be shared with nvs regardless of Avalonia version.
+AI features (natural-language → request, response analysis, test generation) go through a
+minimal interface defined in `Core` (`ApiClient.Core.Llm.ILlmService`):
+
+```csharp
+public interface ILlmService
+{
+    bool IsConfigured { get; }
+    Task<string> ChatAsync(string systemPrompt, string userPrompt, CancellationToken ct = default);
+}
+```
+
+- **Standalone** builds an `OpenAiCompatibleLlmService` from the AI Assistant section in
+  Settings (any OpenAI-compatible endpoint: OpenAI, OpenRouter, DeepSeek, Ollama, LM Studio).
+- **Embedded** hosts inject their own implementation via the
+  `WorkspaceViewModel(CollectionStore, SettingsStore, ILlmService?)` constructor, so the AI
+  features share the host's LLM configuration. NVS passes an adapter over its own
+  `NVS.Core.Interfaces.ILlmService` (`NVS.Helpers.ApiClientLlmAdapter`).
+
+When the host injects the service, the Settings dialog's AI section is ignored for the
+workspace (the host's configuration wins). Hosts that render their own menus can also hide
+the embedded menu bar via `WorkspaceViewModel.IsMenuVisible = false` — NVS does this and
+surfaces the workspace commands in its own **API Client** menu.
+
+## Embedded in nvs today (current state)
+
+nvs is on Avalonia 12, matching `ApiClient.UI`, so in-process embedding works directly:
+nvs references `ApiClient.Core`/`ApiClient.UI` via project references and hosts
+`WorkspaceView` as a **document tab** (opened on demand from View → API Client or the
+**API Client** menu), no plugin API required.

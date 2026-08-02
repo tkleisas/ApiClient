@@ -29,6 +29,12 @@ These are commitments, not marketing. They drive real design decisions:
 
 - **Pre/post-request scripting** in JavaScript (Jint), with `req`/`res`/`bru`/`crypto`
   and `test`/`expect` — chain values between requests, sign payloads, assert responses.
+- **AI assistant** — build a request from a natural-language description (✨ next to Send),
+  analyze a response (✨ Analyze), and generate post-response tests (✨ Generate tests).
+  Works with any OpenAI-compatible endpoint (OpenAI, OpenRouter, DeepSeek, Ollama,
+  LM Studio); configure it in **Tools → Settings… → AI Assistant**. Hosts embedding the
+  workspace (e.g. the nvs IDE) can inject their own LLM service instead — see
+  [docs/integration.md](docs/integration.md).
 
 ## Architecture
 

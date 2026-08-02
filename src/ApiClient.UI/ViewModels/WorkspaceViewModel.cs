@@ -5,6 +5,7 @@ using System.Linq;
 using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
 using ApiClient.Core.ImportExport;
+using ApiClient.Core.Llm;
 using ApiClient.Core.Model;
 using ApiClient.Core.Storage;
 using AvaloniaVirtualDataGrid.Core;
@@ -24,6 +25,7 @@ public partial class WorkspaceViewModel : ViewModelBase
     private readonly ReconfigurableHttpSender? _sender;
     private readonly EnvironmentStore _environmentStore = new();
     private readonly HistoryStore _historyStore = new();
+    private readonly bool _llmHostProvided;
 
     /// <summary>Default constructor: builds the editor with a TLS-configured HTTP client from saved settings.</summary>
     public WorkspaceViewModel()
@@ -32,10 +34,17 @@ public partial class WorkspaceViewModel : ViewModelBase
     }
 
     /// <summary>Creates the workspace from stores, building a TLS-configured editor from the loaded settings.</summary>
-    public WorkspaceViewModel(CollectionStore store, SettingsStore settingsStore)
+    /// <param name="store">The collection store.</param>
+    /// <param name="settingsStore">The settings store.</param>
+    /// <param name="llm">
+    /// Optional host-provided LLM service (e.g. from the embedding IDE). When null, the AI
+    /// features use the built-in OpenAI-compatible service configured in Settings.
+    /// </param>
+    public WorkspaceViewModel(CollectionStore store, SettingsStore settingsStore, ILlmService? llm = null)
     {
         _store = store;
         _settingsStore = settingsStore;
+        _llmHostProvided = llm is not null;
         Settings = _settingsStore.Load();
 
         _sender = new ReconfigurableHttpSender(new HttpClientSender(TlsHandlerFactory.CreateClient(Settings.ToTlsOptions())));
@@ -43,6 +52,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         Editor = new RequestEditorViewModel(executor, new StandaloneHostServices())
         {
             RequestRecorded = RecordHistory,
+            LlmService = llm ?? new OpenAiCompatibleLlmService(Settings.Llm),
         };
 
         foreach (var entry in _historyStore.Load())
@@ -77,6 +87,9 @@ public partial class WorkspaceViewModel : ViewModelBase
         _settingsStore.Save(merged);
         Settings = merged;
         _sender?.Set(new HttpClientSender(TlsHandlerFactory.CreateClient(merged.ToTlsOptions())));
+
+        if (!_llmHostProvided)
+            Editor.LlmService = new OpenAiCompatibleLlmService(merged.Llm);
     }
 
     private void RememberLastCollection(string directory, bool isBruno)
@@ -99,6 +112,13 @@ public partial class WorkspaceViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _showHistory;
+
+    /// <summary>
+    /// Whether the embedded menu bar is shown. Hosts that integrate the workspace's
+    /// commands into their own menu system (e.g. NVS) set this to false.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isMenuVisible = true;
 
     private void RecordHistory(HistoryEntry entry)
     {

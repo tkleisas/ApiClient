@@ -22,7 +22,7 @@
 
         <!-- Menu + environment selector -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto">
-            <Menu Grid.Column="0">
+            <Menu Grid.Column="0" IsVisible="{Binding IsMenuVisible}">
                 <MenuItem Header="_File">
                     <MenuItem Header="_Open Collection…" Click="OnOpenCollection"/>
                     <MenuItem Header="Import _Bruno collection…" Click="OnImportBruno"/>

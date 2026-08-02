@@ -52,6 +52,9 @@ public record AppSettings
     /// </summary>
     public string ClientCertificatePassword { get; init; } = string.Empty;
 
+    /// <summary>AI assistant settings (OpenAI-compatible endpoint). Disabled by default.</summary>
+    public ApiClient.Core.Llm.LlmSettings Llm { get; init; } = new();
+
     /// <summary>Projects the TLS-related settings into <see cref="TlsOptions"/> for the HTTP layer.</summary>
     public TlsOptions ToTlsOptions() => new TlsOptions
     {

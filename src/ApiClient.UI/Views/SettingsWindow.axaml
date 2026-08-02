@@ -77,6 +77,32 @@
                        FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
         </StackPanel>
 
+        <Separator/>
+
+        <TextBlock Text="AI Assistant" FontWeight="SemiBold"/>
+        <CheckBox Content="Enable AI features (build request, analyze response, generate tests)"
+                  IsChecked="{Binding LlmEnabled}"/>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Endpoint (OpenAI-compatible)"/>
+            <TextBox Text="{Binding LlmEndpoint}" PlaceholderText="https://api.openai.com/v1"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="API key (empty for local models)"/>
+            <TextBox PasswordChar="•" Text="{Binding LlmApiKey}"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Model"/>
+            <TextBox Text="{Binding LlmModel}" PlaceholderText="gpt-4o-mini, deepseek-chat, codellama"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Temperature"/>
+            <NumericUpDown Minimum="0" Maximum="2" Increment="0.1" Value="{Binding LlmTemperature}"/>
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
             <Button Content="Cancel" MinWidth="80" Click="OnCancel"/>
             <Button Content="OK" MinWidth="80" Click="OnOk"/>

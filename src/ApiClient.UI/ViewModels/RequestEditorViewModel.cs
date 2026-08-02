@@ -8,6 +8,7 @@ using ApiClient.Core.CodeGen;
 using ApiClient.Core.Hosting;
 using ApiClient.Core.Http;
 using ApiClient.Core.Json;
+using ApiClient.Core.Llm;
 using ApiClient.Core.Model;
 using ApiClient.Core.Scripting;
 using ApiClient.Core.Variables;
@@ -72,6 +73,68 @@ public partial class RequestEditorViewModel : ViewModelBase
 
     /// <summary>Invoked after each successful send so a host can record it to history.</summary>
     public Action<HistoryEntry>? RequestRecorded { get; set; }
+
+    private ILlmService? _llmService;
+    private int _lastStatusCode;
+
+    /// <summary>
+    /// The LLM service used for AI features (request generation, response analysis, test
+    /// generation). Null or unconfigured hides the AI buttons.
+    /// </summary>
+    public ILlmService? LlmService
+    {
+        get => _llmService;
+        set
+        {
+            if (SetProperty(ref _llmService, value))
+                OnPropertyChanged(nameof(IsAiAvailable));
+        }
+    }
+
+    /// <summary>Whether AI features are available (an LLM service is configured).</summary>
+    public bool IsAiAvailable => LlmService?.IsConfigured == true;
+
+    /// <summary>Generates an <see cref="ApiRequest"/> from a natural-language description via the LLM.</summary>
+    public async Task<ApiRequest> BuildRequestFromDescriptionAsync(string description)
+    {
+        var (system, user) = LlmPrompts.BuildRequestFromDescription(description);
+        var reply = await RequireLlm().ChatAsync(system, user);
+        return LlmPrompts.ParseGeneratedRequest(reply);
+    }
+
+    /// <summary>Analyzes the last response via the LLM and returns the analysis text.</summary>
+    public async Task<string> AnalyzeResponseAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ResponseBody))
+            throw new InvalidOperationException("Send a request first — there is no response to analyze.");
+
+        var (system, user) = LlmPrompts.BuildAnalyzeResponse(_lastStatusCode, ResponseHeaders, ResponseBody);
+        return await RequireLlm().ChatAsync(system, user);
+    }
+
+    /// <summary>Generates a post-response test script for the current request via the LLM.</summary>
+    [RelayCommand]
+    private async Task AiGenerateTests()
+    {
+        if (!IsAiAvailable)
+            return;
+
+        try
+        {
+            var (system, user) = LlmPrompts.BuildTestScript(BuildRequest());
+            var reply = await RequireLlm().ChatAsync(system, user);
+            var code = LlmPrompts.ExtractCode(reply);
+            if (!string.IsNullOrWhiteSpace(code))
+                PostResponseScript = code;
+        }
+        catch (Exception ex)
+        {
+            ScriptError = ex.Message;
+        }
+    }
+
+    private ILlmService RequireLlm() =>
+        LlmService ?? throw new InvalidOperationException("AI features are not configured. Open Settings to set an LLM endpoint and model.");
 
     /// <summary>The HTTP methods offered in the method drop-down.</summary>
     public string[] Methods { get; } = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
@@ -247,6 +310,7 @@ public partial class RequestEditorViewModel : ViewModelBase
 
             var response = await _executor.ExecuteAsync(request, variables);
 
+            _lastStatusCode = response.StatusCode;
             ResponseSummary =
                 $"{response.StatusCode} {response.ReasonPhrase} · {response.Elapsed.TotalMilliseconds:F0} ms · {FormatSize(response.SizeBytes)}";
             ResponseHeaders = string.Join(Environment.NewLine, response.Headers.Select(h => $"{h.Name}: {h.Value}"));

@@ -42,6 +42,21 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty]
     private string _clientCertificatePassword = string.Empty;
 
+    [ObservableProperty]
+    private bool _llmEnabled;
+
+    [ObservableProperty]
+    private string _llmEndpoint = string.Empty;
+
+    [ObservableProperty]
+    private string _llmApiKey = string.Empty;
+
+    [ObservableProperty]
+    private string _llmModel = string.Empty;
+
+    [ObservableProperty]
+    private double _llmTemperature;
+
     /// <summary>Design-time constructor.</summary>
     public SettingsViewModel()
     {
@@ -57,6 +72,11 @@ public partial class SettingsViewModel : ViewModelBase
         AllowInvalidServerCertificates = settings.AllowInvalidServerCertificates;
         ClientCertificatePath = settings.ClientCertificatePath;
         ClientCertificatePassword = settings.ClientCertificatePassword;
+        LlmEnabled = settings.Llm.Enabled;
+        LlmEndpoint = settings.Llm.Endpoint;
+        LlmApiKey = settings.Llm.ApiKey;
+        LlmModel = settings.Llm.Model;
+        LlmTemperature = settings.Llm.Temperature;
     }
 
     /// <summary>Produces an <see cref="AppSettings"/> from the current edits.</summary>
@@ -69,5 +89,13 @@ public partial class SettingsViewModel : ViewModelBase
         AllowInvalidServerCertificates = AllowInvalidServerCertificates,
         ClientCertificatePath = ClientCertificatePath,
         ClientCertificatePassword = ClientCertificatePassword,
+        Llm = new ApiClient.Core.Llm.LlmSettings
+        {
+            Enabled = LlmEnabled,
+            Endpoint = LlmEndpoint,
+            ApiKey = LlmApiKey,
+            Model = LlmModel,
+            Temperature = LlmTemperature,
+        },
     };
 }

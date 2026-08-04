@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -74,6 +75,10 @@ public partial class AiRequestDialog : Window
 
         var cancelButton = new Button { Content = "Cancel", Padding = new(16, 8), Margin = new(8, 0, 0, 0) };
         cancelButton.Click += (_, _) => Close();
+
+        AutomationProperties.SetAutomationId(_descriptionBox, "AiDescriptionInput");
+        AutomationProperties.SetAutomationId(generateButton, "AiGenerateButton");
+        AutomationProperties.SetAutomationId(_applyButton, "AiApplyButton");
 
         Content = new Grid
         {

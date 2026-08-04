@@ -33,12 +33,14 @@
                      Text="{Binding Url}"
                      PlaceholderText="https://example.com/api"/>
             <Button Grid.Column="2" Width="40" Margin="0,0,3,0"
+                    AutomationProperties.AutomationId="AiBuildRequestButton"
                     Content="✨"
                     HorizontalContentAlignment="Center"
                     ToolTip.Tip="Build request with AI"
                     IsVisible="{Binding IsAiAvailable}"
                     Click="OnAiBuildRequest"/>
             <Button Grid.Column="3" Width="72"
+                    AutomationProperties.AutomationId="SendRequestButton"
                     Content="Send"
                     HorizontalContentAlignment="Center"
                     IsEnabled="{Binding !IsSending}"
@@ -141,6 +143,7 @@
                         <TextBlock Grid.Row="2" Margin="0,6,0,2" Opacity="0.8"
                                    Text="Post-response JS — res, bru.setVar, test()/expect()"/>
                         <Button Grid.Row="2" HorizontalAlignment="Right" Padding="8,2" Margin="0,4,0,2"
+                                AutomationProperties.AutomationId="AiGenerateTestsButton"
                                 Content="✨ Generate tests"
                                 ToolTip.Tip="Generate post-response tests with AI"
                                 IsVisible="{Binding IsAiAvailable}"
@@ -169,7 +172,7 @@
                                 <CheckBox Content="Word wrap" VerticalAlignment="Center"
                                           IsChecked="{Binding WordWrap}"
                                           IsVisible="{Binding IsTextResponseView}"/>
-                                <Button Content="✨ Analyze" Padding="8,2"
+                                <Button AutomationProperties.AutomationId="AiAnalyzeButton" Content="✨ Analyze" Padding="8,2"
                                         ToolTip.Tip="Analyze this response with AI"
                                         IsVisible="{Binding IsAiAvailable}"
                                         Click="OnAiAnalyzeResponse"/>

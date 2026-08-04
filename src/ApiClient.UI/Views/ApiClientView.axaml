@@ -133,7 +133,7 @@
                                  Text="{Binding GeneratedCode}"/>
                     </DockPanel>
                 </TabItem>
-                <TabItem Header="Scripts">
+                <TabItem Header="Scripts" AutomationProperties.AutomationId="ScriptsTab">
                     <Grid RowDefinitions="Auto,*,Auto,*" Margin="2">
                         <TextBlock Grid.Row="0" Margin="0,0,0,2" Opacity="0.8"
                                    Text="Pre-request JS — req, bru.setVar/getVar, crypto"/>

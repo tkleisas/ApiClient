@@ -99,4 +99,29 @@ public class OpenAiCompatibleLlmServiceTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.ChatAsync("s", "u"));
     }
+
+    [Theory]
+    [InlineData("high")]
+    [InlineData("low")]
+    public async Task ChatAsync_ThinkingModeEnabled_IncludesReasoningEffort(string effort)
+    {
+        var settings = EnabledSettings() with { ThinkingMode = true, ThinkingEffort = effort };
+        var (service, handler) = Create(settings);
+
+        await service.ChatAsync("s", "u");
+
+        using var doc = JsonDocument.Parse(handler.LastRequestBody!);
+        Assert.Equal(effort, doc.RootElement.GetProperty("reasoning_effort").GetString());
+    }
+
+    [Fact]
+    public async Task ChatAsync_ThinkingModeDisabled_OmitsReasoningEffort()
+    {
+        var (service, handler) = Create(EnabledSettings() with { ThinkingMode = false });
+
+        await service.ChatAsync("s", "u");
+
+        using var doc = JsonDocument.Parse(handler.LastRequestBody!);
+        Assert.False(doc.RootElement.TryGetProperty("reasoning_effort", out _));
+    }
 }

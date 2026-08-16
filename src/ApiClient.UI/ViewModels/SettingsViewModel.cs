@@ -57,6 +57,15 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty]
     private double _llmTemperature;
 
+    [ObservableProperty]
+    private bool _llmThinkingMode;
+
+    [ObservableProperty]
+    private string _llmThinkingEffort = "medium";
+
+    /// <summary>The selectable thinking effort levels (OpenAI-compatible reasoning_effort).</summary>
+    public string[] LlmThinkingEfforts { get; } = ["low", "medium", "high"];
+
     /// <summary>Design-time constructor.</summary>
     public SettingsViewModel()
     {
@@ -77,6 +86,8 @@ public partial class SettingsViewModel : ViewModelBase
         LlmApiKey = settings.Llm.ApiKey;
         LlmModel = settings.Llm.Model;
         LlmTemperature = settings.Llm.Temperature;
+        LlmThinkingMode = settings.Llm.ThinkingMode;
+        LlmThinkingEffort = string.IsNullOrEmpty(settings.Llm.ThinkingEffort) ? "medium" : settings.Llm.ThinkingEffort;
     }
 
     /// <summary>Produces an <see cref="AppSettings"/> from the current edits.</summary>
@@ -96,6 +107,8 @@ public partial class SettingsViewModel : ViewModelBase
             ApiKey = LlmApiKey,
             Model = LlmModel,
             Temperature = LlmTemperature,
+            ThinkingMode = LlmThinkingMode,
+            ThinkingEffort = LlmThinkingEffort,
         },
     };
 }

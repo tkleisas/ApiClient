@@ -21,4 +21,10 @@ public record LlmSettings
 
     /// <summary>Sampling temperature (0.0–2.0).</summary>
     public double Temperature { get; init; } = 0.2;
+
+    /// <summary>Whether to request extended reasoning (OpenAI-compatible <c>reasoning_effort</c>).</summary>
+    public bool ThinkingMode { get; init; }
+
+    /// <summary>Reasoning effort level, one of <c>low</c>, <c>medium</c> or <c>high</c>.</summary>
+    public string ThinkingEffort { get; init; } = "medium";
 }

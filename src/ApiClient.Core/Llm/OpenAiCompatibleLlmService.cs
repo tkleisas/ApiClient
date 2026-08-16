@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,7 +54,8 @@ public class OpenAiCompatibleLlmService : ILlmService
                 new { role = "user", content = userPrompt }
             },
             temperature = _settings.Temperature,
-            stream = false
+            stream = false,
+            reasoning_effort = _settings.ThinkingMode ? _settings.ThinkingEffort : null
         };
 
         using var request = new HttpRequestMessage(
@@ -61,7 +63,10 @@ public class OpenAiCompatibleLlmService : ILlmService
             BuildCompletionsUrl(_settings.Endpoint))
         {
             Content = new StringContent(
-                JsonSerializer.Serialize(requestBody),
+                JsonSerializer.Serialize(requestBody, new JsonSerializerOptions
+                {
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                }),
                 Encoding.UTF8,
                 "application/json")
         };
